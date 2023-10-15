@@ -15,7 +15,7 @@ app = Flask('churn')
 def predict():
     client = request.get_json()
     X = dv.transform([client])
-    y_pred = model2.predict_proba(X)[0, 1]
+    y_pred = model1.predict_proba(X)[0, 1]
     grant_credit = y_pred > 0.5
     results = {
         'probability': float(y_pred),
