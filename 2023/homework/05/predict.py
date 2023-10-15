@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify
 import pickle
 
-with open('model1.bin', 'rb') as f_in, open('dv.bin', 'rb') as g_in:
-    model = pickle.load(f_in)
-    dv = pickle.load(g_in)
+with open('model1.bin', 'rb') as f_in, open('model2.bin', 'rb') as g_in:
+    model1 = pickle.load(f_in)
+    model2 = pickle.load(g_in)
 
+with open('dv.bin', 'rb') as h_in:
+    dv = pickle.load(h_in)
 
 app = Flask('churn')
 
@@ -13,9 +15,11 @@ app = Flask('churn')
 def predict():
     client = request.get_json()
     X = dv.transform([client])
-    y_pred = model.predict_proba(X)[0, 1]
+    y_pred = model2.predict_proba(X)[0, 1]
+    grant_credit = y_pred > 0.5
     results = {
-        'probability': float(y_pred)
+        'probability': float(y_pred),
+        'grant_credit': bool(grant_credit)
     }
     return jsonify(results)
 

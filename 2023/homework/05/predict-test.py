@@ -1,6 +1,22 @@
 import requests
 
+# parameters
 url = 'http://localhost:9696/predict'
 
-client = {"job": "unknown", "duration": 270, "poutcome": "failure"}
-print(requests.post(url, json=client).json())
+# client for question 2
+# client_1 = {"job": "retired", "duration": 445, "poutcome": "success"}
+
+# client for question 5
+# client_2 = {"job": "unknown", "duration": 270, "poutcome": "success"}
+
+# client for question 6: IMPORTANT - REQUIRES model2.bin
+client_3 = {"job": "retired", "duration": 445, "poutcome": "success"}
+
+# client_list = [client_1, client_2, client_3]
+client_list = [client_3]
+
+for idx, client in enumerate(client_list):
+    result = requests.post(url, json=client).json()
+    if result['grant_credit']:
+        print(f'''Probability: {round(result['probability'], 3)}''')
+        print(f'Client {idx+1} may be granted loan')
