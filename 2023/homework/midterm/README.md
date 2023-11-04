@@ -14,3 +14,9 @@ The data analysis is organized as follows:
     * Model selection process and parameter tuning.
 
 * `train.py`
+    * Training the final model
+    * Saving model to a pickle file
+
+* `predict.py`
+    * Loading the model
+    * Serving it via Flask web service
