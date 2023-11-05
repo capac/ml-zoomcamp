@@ -42,6 +42,7 @@ y_test = y_test.reset_index(drop=True)
 
 # One-hot encoding
 def data_transformation(X_train, X_val, X_test):
+    global dv
     X_train_dicts = X_train.to_dict(orient='records')
     X_val_dicts = X_val.to_dict(orient='records')
     X_test_dicts = X_test.to_dict(orient='records')
@@ -127,12 +128,18 @@ with warnings.catch_warnings():
 print(f'F1 score using best {rf.__class__.__name__} estimator: {f1_score_rf.round(3):>8}')
 print(f'AUC using best {rf.__class__.__name__} estimator: {auc_result_rf.round(3):>13}')
 
-# Saving model to pickle file
-saved_model = 'model.pkl'
-with open(saved_model, "wb") as f:
+# Saving best model to pickle file
+best_model_file = 'model.pkl'
+with open(best_model_file, "wb") as f:
     pickle.dump(rf, f)
 
+# Saving DictVectorizer model to pickle file
+dv_file = 'dv.pkl'
+with open(dv_file, "wb") as f:
+    pickle.dump(dv, f)
+
 print()
-print(f'Saved {rf.__class__.__name__} in {saved_model} file.')
+print(f'Saved {rf.__class__.__name__} in {best_model_file} file.')
+print(f'Saved {dv.__class__.__name__} class instance in {dv_file} file.')
 print()
 print(f'Time elapsed: {time() - t0:.3f} seconds.')
