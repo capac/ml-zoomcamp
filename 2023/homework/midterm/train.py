@@ -12,7 +12,7 @@ from sklearn.metrics import roc_auc_score, f1_score
 from sklearn.model_selection import GridSearchCV
 from time import time
 import warnings
-
+import pickle
 
 # Data preparation
 df = pd.read_csv('heart_failure_clinical_records_dataset.csv')
@@ -127,4 +127,12 @@ with warnings.catch_warnings():
 print(f'F1 score using best {rf.__class__.__name__} estimator: {f1_score_rf.round(3):>8}')
 print(f'AUC using best {rf.__class__.__name__} estimator: {auc_result_rf.round(3):>13}')
 
+# Saving model to pickle file
+saved_model = 'model.pkl'
+with open(saved_model, "wb") as f:
+    pickle.dump(rf, f)
+
+print()
+print(f'Saved {rf.__class__.__name__} in {saved_model} file.')
+print()
 print(f'Time elapsed: {time() - t0:.3f} seconds.')
