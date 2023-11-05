@@ -32,6 +32,8 @@ X_train, X_val, y_train, y_val = train_test_split(X_full_train, y_full_train,
                                                   stratify=y_full_train,
                                                   test_size=0.25, random_state=1)
 
+X_full_train = X_full_train.reset_index(drop=True)
+y_full_train = y_full_train.reset_index(drop=True)
 X_train = X_train.reset_index(drop=True)
 y_train = y_train.reset_index(drop=True)
 X_val = X_val.reset_index(drop=True)
@@ -54,23 +56,16 @@ def data_transformation(X_train, X_val, X_test):
     return X_cat_tr, X_cat_val, X_cat_test, feature_names
 
 
-X_cat_train, X_cat_val, X_test_val, feature_names = data_transformation(X_train, X_val,
-                                                                        X_test)
+X_cat_train, X_cat_val, _, feature_names = data_transformation(X_train, X_val, X_test)
 
 
 # Modeling with Logistic Regression, Decision Trees and Random Forests
 with warnings.catch_warnings():
     warnings.simplefilter(action='ignore', category=FutureWarning)
 
-    lr = LogisticRegression()
+    lr = LogisticRegression(max_iter=1000)
     dt = DecisionTreeClassifier(random_state=1)
     rf = RandomForestClassifier(random_state=1)
-    # lr = LogisticRegression(solver='liblinear', C=1.0,
-    #                         max_iter=1000)
-    # rf = RandomForestClassifier(n_estimators=200, min_samples_leaf=5,
-    #                             max_depth=8, random_state=1)
-    # dt = DecisionTreeClassifier(max_depth=3, min_samples_leaf=5,
-    #                             random_state=1)
 
     lr.fit(X_cat_train, y_train)
     dt.fit(X_cat_train, y_train)
@@ -127,6 +122,26 @@ with warnings.catch_warnings():
 
 print(f'F1 score using best {rf.__class__.__name__} estimator: {f1_score_rf.round(3):>8}')
 print(f'AUC using best {rf.__class__.__name__} estimator: {auc_result_rf.round(3):>13}')
+
+
+# Use all of the data to fit the default RF model
+X_full_train_dicts = X_full_train.to_dict(orient='records')
+X_full_train_transfored = dv.fit_transform(X_full_train_dicts)
+X_test_dicts = X_test.to_dict(orient='records')
+X_test_transfored = dv.transform(X_test_dicts)
+
+with warnings.catch_warnings():
+    warnings.simplefilter(action='ignore', category=FutureWarning)
+
+    rf.fit(X_full_train_transfored, y_full_train)
+    y_pred_rf = rf.predict(X_test_transfored)
+    auc_result_rf = roc_auc_score(y_test, y_pred_rf)
+    f1_score_rf = f1_score(y_test, y_pred_rf)
+
+print()
+print(f'F1 score using default {rf.__class__.__name__} estimator with training and validation dataset: {f1_score_rf.round(3):>8}')
+print(f'AUC using default {rf.__class__.__name__} estimator with training and validation dataset: {auc_result_rf.round(3):>13}')
+
 
 # Saving best model to pickle file
 best_model_file = 'model.pkl'
