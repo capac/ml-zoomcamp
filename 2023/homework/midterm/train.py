@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import pandas as pd
+from sklearn.base import clone
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
@@ -60,12 +61,15 @@ X_cat_train, X_cat_val, X_test_val, feature_names = data_transformation(X_train,
 with warnings.catch_warnings():
     warnings.simplefilter(action='ignore', category=FutureWarning)
 
-    lr = LogisticRegression(solver='liblinear', C=1.0,
-                            max_iter=1000)
-    rf = RandomForestClassifier(n_estimators=200, min_samples_leaf=5,
-                                max_depth=8, random_state=1)
-    dt = DecisionTreeClassifier(max_depth=3, min_samples_leaf=5,
-                                random_state=1)
+    lr = LogisticRegression()
+    dt = DecisionTreeClassifier(random_state=1)
+    rf = RandomForestClassifier(random_state=1)
+    # lr = LogisticRegression(solver='liblinear', C=1.0,
+    #                         max_iter=1000)
+    # rf = RandomForestClassifier(n_estimators=200, min_samples_leaf=5,
+    #                             max_depth=8, random_state=1)
+    # dt = DecisionTreeClassifier(max_depth=3, min_samples_leaf=5,
+    #                             random_state=1)
 
     lr.fit(X_cat_train, y_train)
     dt.fit(X_cat_train, y_train)
@@ -97,16 +101,13 @@ print(f'AUC using {rf.__class__.__name__}: {auc_result_rf.round(3):>18}')
 
 # Parameter tuning with Random Forests
 param_grid = [{'n_estimators': [50, 100, 200],
-              'max_depth': [2, 5, 10],
-              'min_samples_leaf': [2, 5, 10]},
-              {'n_estimators': [100, 200, 500],
-              'max_depth': [5, 10, 20],
-              'min_samples_leaf': [5, 10, 15]},]
+              'max_depth': [2, 5, 10, 15],
+              'min_samples_leaf': [2, 5, 10, 15]},]
 
 with warnings.catch_warnings():
     warnings.simplefilter(action='ignore', category=FutureWarning)
-    rf = RandomForestClassifier(random_state=1)
-    grid_search = GridSearchCV(rf, param_grid, cv=5,
+    rf_orig = clone(rf)
+    grid_search = GridSearchCV(rf_orig, param_grid, cv=5,
                                scoring='neg_log_loss')
     grid_search.fit(X_cat_train, y_train)
 
@@ -118,7 +119,6 @@ with warnings.catch_warnings():
     warnings.simplefilter(action='ignore', category=FutureWarning)
 
     best_estimator_rf = grid_search.best_estimator_
-
     best_estimator_rf.fit(X_cat_train, y_train)
     y_pred_rf = best_estimator_rf.predict(X_cat_val)
     auc_result_rf = roc_auc_score(y_val, y_pred_rf)
