@@ -1,25 +1,38 @@
 # ML Zoomcamp 2023 &ndash; Midterm Project
 
-The _Heart failure clinical records_ dataset contains the medical records of 299 patients who had heart failure, collected during their follow-up period, where each patient profile has 13 clinical features.
+The _Heart failure clinical records_ dataset contains the medical records of 299 patients who had heart failure, collected during their follow-up period, where each patient profile has 13 clinical features. These features, both numerical and categorcial, are patient age, presence or absence of anaemia, creatinine phosphokinase, presence or absence of diabetes, ejection fraction, presence or absence of high blood pressure, platelets, serum creatinine, serum sodium, patient sex, presence or absence of patient smoking, follow-up check-up time, and death event.
 
-The research article based on the data set states that a random forest model is the best model that can predict survival of patients with heart failure from the serum creatinine and ejection fraction features alone. This statement can already be observed from the feature importance plot where the most important features after follow-up time are serum creatinine and ejection fraction. Moreover, one can also notice the same oberservation in both the exploratory data analysis box plots of death event versus serum creatinine and ejection fraction. Although interesting in itself, further analyses from the exploratory data analysis observations are still warranted to obtain a complete picture of the data set.
+The research article based on the data set states that a random forest model is the best model that can predict survival of patients with heart failure from the serum creatinine and ejection fraction features alone. This can be readily seen in the feature importance plot, as the features of greatest importance after follow-up check-up time are indeed creatinine phosphokinase and ejection fraction. Moreover, one can also make a similar oberservation in both exploratory data analysis box plots of death event versus serum creatinine and ejection fraction. Although interesting in itself, further analyses from the exploratory data analysis observations are still warranted to obtain a complete picture of the data set.
 
 The research article can be accessed at the link, [Machine learning can predict survival of patients with heart failure from serum creatinine and ejection fraction alone](https://www.semanticscholar.org/paper/Machine-learning-can-predict-survival-of-patients-Chicco-Jurman/e64579d8593140396b518682bb3a47ba246684eb) (link to pdf of article [here](https://bmcmedinformdecismak.biomedcentral.com/counter/pdf/10.1186/s12911-020-1023-5.pdf)).
 
 The data set can be retrieved from the UCI Machine Learning Repository at the link, [Heart failure clinical records](http://archive.ics.uci.edu/dataset/519/heart+failure+clinical+records).
 
-The data analysis is organized as follows:
+The data analysis is organized in the following files as follows:
 
-* `notebook.ipynb` contains:
+1. `notebook.ipynb` contains:
     * Data preparation and data clearning,
-    * Exploratory data analysis with box and bar plots,
-    * Model selection process and hyper-parameter tuning,
-    * Feature importance analysis plot with best model parameters.
+        * Pair plot of numerical features
+        * Box plots of death event versus age, creatinine phosphokinase, ejection fraction, platelets, serum creatinine and serum sodium aggregated on sex, diabetes, smoking and high blood pressure,
+        * Bar plots of counts of death events, anaemia, diabetes, high blood pressure, sex and smoking
+    * Model selection process with Logistic Regression, Decision Trees and Random Forests
+    * Hyper-parameter tuning on Random Forests model,
+    * Feature importance analysis plot with default hyperparameters values of the Random Forests model, since these gave the best F1 and AUC values.
 
-* `train.py`
-    * Training the final model with best model parameters,
-    * Saving best model and DictVectorizer class instance to pickle files.
+2. `train.py`
+    * Training the final model with the default hyperparameters values for the Random Forests model,
+    * Saving the model and `DictVectorizer` class instance to pickle files.
 
-* `predict.py`
-    * Loading the model and DictVectorizer object from the `model.pkl` and `dv.pkl` files respectively,
+3. `predict.py`
+    * Loading the model and `DictVectorizer` object from the `model.pkl` and `dv.pkl` files respectively,
     * Serving it via Flask web service.
+
+4. `predict-test.py`
+    * Testing the model locally on the Docker container with Python 3.9.18 and Scikit-Learn 1.2.2, using two patient records, one with an adverse death outcome and one without.
+
+5. `predict-cloud.py`
+    * Testing the same model as above, remotely hosted on Render on the Docker container with the same configuration, using the same two patient records, one with an adverse death outcome and one without. Running the file locally simply with `python predict-cloud.py` will trigger the model and produce a result. There may be need for several seconds for the outcome to appear.
+
+The dependency files used for the model are `Pipfile`, `Pipfile.lock` and `Dockerfile`, contained in the GitHub repository. The image below gives an idea of the output for the remote Docker container with the model:
+
+![Output of Docker container]()
