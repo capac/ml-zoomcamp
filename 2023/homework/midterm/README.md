@@ -35,4 +35,4 @@ The data analysis is organized in the following files as follows:
 
 The dependency files used for the model are `Pipfile`, `Pipfile.lock` and `Dockerfile`, contained in the GitHub repository. The image below gives an idea of the output for the remote Docker container with the model:
 
-![Output of Docker container]()
+![](docker-output.png)
