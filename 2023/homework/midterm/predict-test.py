@@ -11,7 +11,7 @@ patient_dict = {
 for key, value in patient_dict.items():
     result = requests.post(url, json=value).json()
     if result['outcome']:
-        print(f'''Probability of death for patient {str(key)}: Yes.''')
+        print(f'''Outcome of death for patient {str(key)}: Yes.''')
     else:
-        print(f'''Probability of death for patient {str(key)}: No.''')
+        print(f'''Outcome of death for patient {str(key)}: No.''')
     print()
