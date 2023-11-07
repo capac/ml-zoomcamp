@@ -17,22 +17,41 @@ The data analysis is organized in the following files as follows:
         * Bar plots of counts of death events, anaemia, diabetes, high blood pressure, sex and smoking
     * Model selection process with Logistic Regression, Decision Trees and Random Forests
     * Hyper-parameter tuning on Random Forests model using `GridSearchCV`,
-    * Feature importance analysis plot with default hyperparameters values of the Random Forests model, since these gave the best F1 and AUC values, at 0.769 and 0.834 respectively.
+    * Feature importance analysis plot with default hyperparameters values of the Random Forests model.
 
 2. `train.py`
     * Training the final model with the default hyperparameters values for the Random Forests model, taken from the Jupyter notebook file,
     * Saving the model and `DictVectorizer` class instance to pickle files.
+    * Best F1 and AUC values with default Random Forest hyperparameters, at 0.769 and 0.834 respectively.
 
 3. `predict.py`
     * Loading the model and `DictVectorizer` object from the `model.pkl` and `dv.pkl` files respectively,
     * Serving it via Flask web service.
+    * The dependency files in the GitHub repository used for the model are:
+        * `Pipfile`,
+        * `Pipfile.lock`,
+        * `Dockerfile`. 
+    * Commands to create and run Docker container locally:
+        * `docker run -it --rm --entrypoint=bash python:3.9.18-slim`
+        * `docker build -t project-midterm .`
+        * `docker run -it --rm --entrypoint=bash project-midterm`
+    * `Dockerfile` contains the necessary Python packages to create the Docker container. The specific packages are:
+        * `pandas`,
+        * `gunicorn`,
+        * `flask`,
+        * `scikit-learn` version 1.2.2,
+        * `python` version 3.9.18.
 
 4. `predict-test.py`
     * Testing the model locally on the Docker container with Python 3.9.18 and Scikit-Learn 1.2.2, using two patient records, one with an adverse death outcome and one without.
 
 5. `predict-cloud.py`
-    * Testing the same model as above, remotely hosted on [Render](https://render.com/) on the Docker container with the same configuration, using the same two patient records, one with an adverse death outcome and one without. Running the file locally with `python predict-cloud.py` will trigger the model and produce a result. There may be need for several seconds for the outcome to appear, since Render may need to spin it up if inactive.
-
-The dependency files used for the model are `Pipfile`, `Pipfile.lock` and `Dockerfile`, contained in the GitHub repository. The image below gives an idea of the output for the remote Docker container with the model:
+    * Testing the same model as above, remotely hosted on [Render](https://render.com/) on the Docker container with the same configuration, using the same two patient records, one with an adverse death outcome and one without.
+    * Commands to push Docker container remotely:
+        * Login in with Docker credentials from Terminal: `docker login`
+        * `docker tag project-midterm capac/projects`
+        * `docker push capac/projects`
+    * Running the file locally with `python predict-cloud.py` will trigger the model and produce a result. You may need to wait for several seconds for the outcome to appear, since Render needs to spin up the container if it's inactive.
+    * The image below gives an idea of the output for the remote Docker container with the model:
 
 ![](docker-output.png)
