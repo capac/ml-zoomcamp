@@ -25,12 +25,14 @@ t0 = time()
 # Data spliting and training
 X = df.drop('death_event', axis=1)
 y = df.death_event
-X_full_train, X_test, y_full_train, y_test = train_test_split(X, y, test_size=0.2,
+X_full_train, X_test, y_full_train, y_test = train_test_split(X, y,
+                                                              test_size=0.2,
                                                               stratify=y,
                                                               random_state=1)
-X_train, X_val, y_train, y_val = train_test_split(X_full_train, y_full_train, 
+X_train, X_val, y_train, y_val = train_test_split(X_full_train, y_full_train,
                                                   stratify=y_full_train,
-                                                  test_size=0.25, random_state=1)
+                                                  test_size=0.25,
+                                                  random_state=1)
 
 X_full_train = X_full_train.reset_index(drop=True)
 y_full_train = y_full_train.reset_index(drop=True)
@@ -56,7 +58,8 @@ def data_transformation(X_train, X_val, X_test):
     return X_cat_tr, X_cat_val, X_cat_test, feature_names
 
 
-X_cat_train, X_cat_val, _, feature_names = data_transformation(X_train, X_val, X_test)
+X_cat_train, X_cat_val, _, feature_names = data_transformation(X_train, X_val,
+                                                               X_test)
 
 
 # Modeling with Logistic Regression, Decision Trees and Random Forests
@@ -83,7 +86,12 @@ with warnings.catch_warnings():
     f1_score_dt = f1_score(y_val, y_pred_dt)
     f1_score_rf = f1_score(y_val, y_pred_rf)
 
-print(f'Testing {lr.__class__.__name__}, {dt.__class__.__name__} and {rf.__class__.__name__}:')
+
+lr_name = lr.__class__.__name__
+dt_name = dt.__class__.__name__
+rf_name = rf.__class__.__name__
+
+print(f'Testing {lr_name}, {dt_name} and {rf_name}:')
 print()
 print(f'F1 score using {lr.__class__.__name__}: {f1_score_lr.round(3):>17}')
 print(f'AUC using {lr.__class__.__name__}: {auc_result_lr.round(3):>22}')
@@ -97,8 +105,8 @@ print(f'AUC using {rf.__class__.__name__}: {auc_result_rf.round(3):>18}')
 
 # Parameter tuning with Random Forests
 param_grid = [{'n_estimators': [50, 100, 200],
-              'max_depth': [2, 5, 10, 15],
-              'min_samples_leaf': [2, 5, 10, 15]},]
+               'max_depth': [2, 5, 10, 15],
+               'min_samples_leaf': [2, 5, 10, 15]},]
 
 with warnings.catch_warnings():
     warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -108,7 +116,7 @@ with warnings.catch_warnings():
     grid_search.fit(X_cat_train, y_train)
 
 print()
-print(f'Best parameters for {rf.__class__.__name__}: {grid_search.best_params_}')
+print(f'Best parameters for {rf_name}: {grid_search.best_params_}')
 print()
 
 with warnings.catch_warnings():
@@ -120,8 +128,8 @@ with warnings.catch_warnings():
     auc_result_rf = roc_auc_score(y_val, y_pred_rf)
     f1_score_rf = f1_score(y_val, y_pred_rf)
 
-print(f'F1 score using best {rf.__class__.__name__} estimator: {f1_score_rf.round(3):>8}')
-print(f'AUC using best {rf.__class__.__name__} estimator: {auc_result_rf.round(3):>13}')
+print(f'F1 score using best {rf_name} estimator: {f1_score_rf.round(3):>8}')
+print(f'AUC using best {rf_name} estimator: {auc_result_rf.round(3):>13}')
 
 
 # Use all of the data to fit the default RF model
@@ -139,8 +147,10 @@ with warnings.catch_warnings():
     f1_score_rf = f1_score(y_test, y_pred_rf)
 
 print()
-print(f'F1 score using default {rf.__class__.__name__} estimator with training and validation dataset: {f1_score_rf.round(3):>8}')
-print(f'AUC using default {rf.__class__.__name__} estimator with training and validation dataset: {auc_result_rf.round(3):>13}')
+print(f'F1 score using default {rf_name} estimator '
+      f'with full dataset: {f1_score_rf.round(3):>8}')
+print(f'AUC using default {rf_name} estimator '
+      f'with full dataset: {auc_result_rf.round(3):>13}')
 
 
 # Saving best model to pickle file
@@ -154,7 +164,7 @@ with open(dv_file, "wb") as f:
     pickle.dump(dv, f)
 
 print()
-print(f'Saved {rf.__class__.__name__} in {best_model_file} file.')
+print(f'Saved {rf_name} in {best_model_file} file.')
 print(f'Saved {dv.__class__.__name__} class instance in {dv_file} file.')
 print()
 print(f'Time elapsed: {time() - t0:.3f} seconds.')
