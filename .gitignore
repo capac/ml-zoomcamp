@@ -142,3 +142,9 @@ dmypy.json
 
 # Excel files
 *.xlsx
+
+# ZIP files
+*.zip
+
+# JPG images
+*.jpg
