@@ -148,3 +148,10 @@ dmypy.json
 
 # JPG images
 *.jpg
+
+# H5 files
+*.h5
+
+# TFLite files
+*.tflite
+
