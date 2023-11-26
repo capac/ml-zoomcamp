@@ -146,8 +146,9 @@ dmypy.json
 # ZIP files
 *.zip
 
-# JPG images
+# JPG/JPEG images
 *.jpg
+*.jpeg
 
 # H5 files
 *.h5
