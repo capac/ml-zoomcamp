@@ -13,7 +13,7 @@ def predict():
     patient = request.get_json()
     X = dv.transform([patient])
     y_pred = model.predict(X)
-    result = {"Outcome": int(y_pred)}
+    result = {"outcome": int(y_pred)}
     return jsonify(result)
 
 
