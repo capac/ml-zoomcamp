@@ -34,8 +34,8 @@ The data analysis is organized in the following files as follows:
         * `Dockerfile`. 
     * Commands to create and run Docker container locally:
         * `docker run -it --rm --entrypoint=bash python:3.9.18-slim`
-        * `docker build -t project-midterm .`
-        * `docker run -it --rm --entrypoint=bash project-midterm`
+        * `docker build -t capstone-project-1 .`
+        * `docker run -it --rm --entrypoint=bash capstone-project-1`
     * `Dockerfile` contains the necessary Python packages to create the Docker container. The specific packages are:
         * `pandas`,
         * `gunicorn`,
@@ -44,13 +44,13 @@ The data analysis is organized in the following files as follows:
         * `python` version 3.9.18.
 
 4. `predict-test.py`
-    * Testing the model locally on the Docker container with Python 3.9.18 and Scikit-Learn 1.2.2, using two patient records, one with an adverse death outcome and one without.
+    * Testing the model locally on the Docker container with Python 3.9.18 and Scikit-Learn 1.2.2, using two patient records, one with an adverse death outcome and one without. Requires docker running in the background. The Docker command is: `docker run -it --rm -p 9696:9696 capstone-project-1`.
 
 5. `predict-cloud.py`
     * Testing the same model as above, remotely hosted on [Render](https://render.com/) on the Docker container with the same configuration, using the same two patient records, one with an adverse death outcome and one without.
     * Commands to push Docker container remotely:
         * Login in with Docker credentials from Terminal: `docker login`
-        * `docker tag project-midterm capac/projects`
+        * `docker tag capstone-project-1 capac/projects`
         * `docker push capac/projects`
     * Running the file locally with `python predict-cloud.py` will trigger the model and produce a result. You may need to wait for several seconds for the outcome to appear, since Render needs to spin up the container if it's inactive.
     * The image below gives an idea of the output for the remote Docker container with the model:
