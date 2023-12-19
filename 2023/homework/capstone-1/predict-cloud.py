@@ -1,6 +1,6 @@
 import requests
 
-host = "zoomcamp-midterm-project.onrender.com"
+host = "zoomcamp-capstone-project-1.onrender.com"
 url = f"https://{host}/predict"
 
 
