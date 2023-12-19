@@ -10,29 +10,29 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score, f1_score
 from sklearn.model_selection import GridSearchCV
+import xgboost as xgb
 from time import time
 import warnings
 import pickle
 
 # Data preparation
-df = pd.read_csv('heart_failure_clinical_records_dataset.csv')
-df.rename(columns={'DEATH_EVENT': 'death_event'}, inplace=True)
-for col in ['anaemia', 'diabetes', 'high_blood_pressure', 'smoking']:
-    df[col].replace(to_replace=[0, 1], value=['No', 'Yes'], inplace=True)
-df.sex.replace(to_replace=[0, 1], value=['Female', 'Male'], inplace=True)
+df = pd.read_csv("heart_failure_clinical_records_dataset.csv")
+df.rename(columns={"DEATH_EVENT": "death_event"}, inplace=True)
+for col in ["anaemia", "diabetes", "high_blood_pressure", "smoking"]:
+    df[col].replace(to_replace=[0, 1], value=["No", "Yes"], inplace=True)
+df.sex.replace(to_replace=[0, 1], value=["Female", "Male"], inplace=True)
 t0 = time()
 
 # Data spliting and training
-X = df.drop('death_event', axis=1)
+X = df.drop("death_event", axis=1)
 y = df.death_event
-X_full_train, X_test, y_full_train, y_test = train_test_split(X, y,
-                                                              test_size=0.2,
-                                                              stratify=y,
-                                                              random_state=1)
-X_train, X_val, y_train, y_val = train_test_split(X_full_train, y_full_train,
-                                                  stratify=y_full_train,
-                                                  test_size=0.25,
-                                                  random_state=1)
+X_full_train, X_test, y_full_train, y_test = train_test_split(
+    X, y, test_size=0.2, stratify=y, random_state=1
+)
+X_train, X_val, y_train, y_val = train_test_split(
+    X_full_train, y_full_train, stratify=y_full_train,
+    test_size=0.25, random_state=1
+)
 
 X_full_train = X_full_train.reset_index(drop=True)
 y_full_train = y_full_train.reset_index(drop=True)
@@ -46,25 +46,24 @@ y_test = y_test.reset_index(drop=True)
 
 # One-hot encoding
 def data_transformation(X_train, X_val, X_test):
-    global dv
-    X_train_dicts = X_train.to_dict(orient='records')
-    X_val_dicts = X_val.to_dict(orient='records')
-    X_test_dicts = X_test.to_dict(orient='records')
-    dv = DictVectorizer(sparse=True)
+    X_train_dicts = X_train.to_dict(orient="records")
+    X_val_dicts = X_val.to_dict(orient="records")
+    X_test_dicts = X_test.to_dict(orient="records")
+    dv = DictVectorizer(sparse=False)
     X_cat_tr = dv.fit_transform(X_train_dicts)
-    feature_names = list(dv.get_feature_names_out())
+    features = list(dv.get_feature_names_out())
     X_cat_val = dv.transform(X_val_dicts)
     X_cat_test = dv.transform(X_test_dicts)
-    return X_cat_tr, X_cat_val, X_cat_test, feature_names
+    return X_cat_tr, X_cat_val, X_cat_test, dv, features
 
 
-X_cat_train, X_cat_val, _, feature_names = data_transformation(X_train, X_val,
-                                                               X_test)
-
+X_cat_train, X_cat_val, X_cat_test, dv, features = data_transformation(
+    X_train, X_val, X_test
+)
 
 # Modeling with Logistic Regression, Decision Trees and Random Forests
 with warnings.catch_warnings():
-    warnings.simplefilter(action='ignore', category=FutureWarning)
+    warnings.simplefilter(action="ignore", category=FutureWarning)
 
     lr = LogisticRegression(max_iter=1000)
     dt = DecisionTreeClassifier(random_state=1)
@@ -87,40 +86,63 @@ with warnings.catch_warnings():
     f1_score_rf = f1_score(y_val, y_pred_rf)
 
 
+# Modeling with XGBoost
+with warnings.catch_warnings():
+    warnings.simplefilter(action="ignore", category=FutureWarning)
+
+    early_stop = xgb.callback.EarlyStopping(
+        rounds=3, metric_name="logloss", save_best=True
+    )
+
+    gb = xgb.XGBClassifier(n_estimators=50, tree_method="hist",
+                           callbacks=[early_stop], verbosity=0)
+    gb.fit(X_cat_train, y_train, eval_set=[(X_cat_val, y_val)])
+    y_pred_gb = gb.predict(X_cat_val)
+    f1_score_gb = f1_score(y_val, y_pred_gb)
+    auc_result_gb = roc_auc_score(y_val, y_pred_gb)
+
+
 lr_name = lr.__class__.__name__
 dt_name = dt.__class__.__name__
 rf_name = rf.__class__.__name__
+gb_name = gb.__class__.__name__
 
-print(f'Testing {lr_name}, {dt_name} and {rf_name}:')
+
+print(f"F1 score using {lr.__class__.__name__}: {f1_score_lr.round(3):>17}")
+print(f"AUC using {lr.__class__.__name__}: {auc_result_lr.round(3):>22}")
 print()
-print(f'F1 score using {lr.__class__.__name__}: {f1_score_lr.round(3):>17}')
-print(f'AUC using {lr.__class__.__name__}: {auc_result_lr.round(3):>22}')
+print(f"F1 score using {dt.__class__.__name__}: {f1_score_dt.round(3):>13}")
+print(f"AUC using {dt.__class__.__name__}: {auc_result_dt.round(3):>18}")
 print()
-print(f'F1 score using {dt.__class__.__name__}: {f1_score_dt.round(3):>13}')
-print(f'AUC using {dt.__class__.__name__}: {auc_result_dt.round(3):>18}')
+print(f"F1 score using {rf.__class__.__name__}: {f1_score_rf.round(3):>13}")
+print(f"AUC using {rf.__class__.__name__}: {auc_result_rf.round(3):>18}")
 print()
-print(f'F1 score using {rf.__class__.__name__}: {f1_score_rf.round(3):>13}')
-print(f'AUC using {rf.__class__.__name__}: {auc_result_rf.round(3):>18}')
+print(f"F1 score using {gb.__class__.__name__}: {f1_score_gb.round(3):>22}")
+print(f"AUC using {gb.__class__.__name__}: {auc_result_gb.round(3):>27}")
 
 
 # Parameter tuning with Random Forests
-param_grid = [{'n_estimators': [50, 100, 200],
-               'max_depth': [2, 5, 10, 15],
-               'min_samples_leaf': [2, 5, 10, 15]},]
+param_grid = [
+    {
+        "n_estimators": [50, 100, 200],
+        "max_depth": [2, 5, 10, 15],
+        "min_samples_leaf": [2, 5, 10, 15],
+    },
+]
 
 with warnings.catch_warnings():
-    warnings.simplefilter(action='ignore', category=FutureWarning)
+    warnings.simplefilter(action="ignore", category=FutureWarning)
     rf_orig = clone(rf)
     grid_search = GridSearchCV(rf_orig, param_grid, cv=5,
-                               scoring='neg_log_loss')
+                               scoring="neg_log_loss")
     grid_search.fit(X_cat_train, y_train)
 
 print()
-print(f'Best parameters for {rf_name}: {grid_search.best_params_}')
+print(f"Best parameters for {rf_name}: {grid_search.best_params_}")
 print()
 
 with warnings.catch_warnings():
-    warnings.simplefilter(action='ignore', category=FutureWarning)
+    warnings.simplefilter(action="ignore", category=FutureWarning)
 
     best_estimator_rf = grid_search.best_estimator_
     best_estimator_rf.fit(X_cat_train, y_train)
@@ -128,18 +150,53 @@ with warnings.catch_warnings():
     auc_result_rf = roc_auc_score(y_val, y_pred_rf)
     f1_score_rf = f1_score(y_val, y_pred_rf)
 
-print(f'F1 score using best {rf_name} estimator: {f1_score_rf.round(3):>8}')
-print(f'AUC using best {rf_name} estimator: {auc_result_rf.round(3):>13}')
+print(f"F1 score using best {rf_name} estimator: {f1_score_rf.round(3):>29}")
+print(f"AUC using best {rf_name} estimator: {auc_result_rf.round(3):>34}")
+
+
+# Parameter tuning with XGBoost
+param_grid_gb = [
+    {
+        "n_estimators": [20, 50, 100],
+        "max_depth": [2, 5, 10],
+        "learning_rate": [0.2, 0.5, 1.0],
+    },
+]
+
+with warnings.catch_warnings():
+    warnings.simplefilter(action="ignore", category=FutureWarning)
+    gb_orig = xgb.XGBClassifier()
+    grid_search_gb = GridSearchCV(gb_orig, param_grid_gb, cv=5,
+                                  scoring="roc_auc", verbose=0,)
+    grid_search_gb.fit(X_cat_train, y_train, eval_set=[(X_cat_val, y_val)])
+
+print()
+print(f"Best parameters for {gb_name}: {grid_search_gb.best_params_}")
+print()
+
+with warnings.catch_warnings():
+    warnings.simplefilter(action="ignore", category=FutureWarning)
+
+    best_estimator_gb = grid_search_gb.best_estimator_
+    best_estimator_gb.fit(X_cat_train, y_train)
+    y_pred_bf_gb = best_estimator_gb.predict(X_cat_val)
+    auc_result_bf_gb = roc_auc_score(y_val, y_pred_bf_gb)
+    f1_score_bf_gb = f1_score(y_val, y_pred_bf_gb)
+
+print(f"F1 score using best {gb_name} estimator:"
+      f"{f1_score_bf_gb.round(3):>20}")
+print(f"AUC using best {gb_name} estimator:"
+      f"{auc_result_bf_gb.round(3):>25}")
 
 
 # Use all of the data to fit the default RF model
-X_full_train_dicts = X_full_train.to_dict(orient='records')
+X_full_train_dicts = X_full_train.to_dict(orient="records")
 X_full_train_transfored = dv.fit_transform(X_full_train_dicts)
-X_test_dicts = X_test.to_dict(orient='records')
+X_test_dicts = X_test.to_dict(orient="records")
 X_test_transfored = dv.transform(X_test_dicts)
 
 with warnings.catch_warnings():
-    warnings.simplefilter(action='ignore', category=FutureWarning)
+    warnings.simplefilter(action="ignore", category=FutureWarning)
 
     rf.fit(X_full_train_transfored, y_full_train)
     y_pred_rf = rf.predict(X_test_transfored)
@@ -147,24 +204,28 @@ with warnings.catch_warnings():
     f1_score_rf = f1_score(y_test, y_pred_rf)
 
 print()
-print(f'F1 score using default {rf_name} estimator '
-      f'with full dataset: {f1_score_rf.round(3):>8}')
-print(f'AUC using default {rf_name} estimator '
-      f'with full dataset: {auc_result_rf.round(3):>13}')
+print(
+    f"F1 score using default {rf_name} estimator "
+    f"with full dataset: {f1_score_rf.round(3):>8}"
+)
+print(
+    f"AUC using default {rf_name} estimator "
+    f"with full dataset: {auc_result_rf.round(3):>13}"
+)
 
 
 # Saving best model to pickle file
-best_model_file = 'model.pkl'
+best_model_file = "model.pkl"
 with open(best_model_file, "wb") as f:
     pickle.dump(rf, f)
 
 # Saving DictVectorizer model to pickle file
-dv_file = 'dv.pkl'
+dv_file = "dv.pkl"
 with open(dv_file, "wb") as f:
     pickle.dump(dv, f)
 
 print()
-print(f'Saved {rf_name} in {best_model_file} file.')
-print(f'Saved {dv.__class__.__name__} class instance in {dv_file} file.')
+print(f"Saved {rf_name} in {best_model_file} file.")
+print(f"Saved {dv.__class__.__name__} class instance in {dv_file} file.")
 print()
-print(f'Time elapsed: {time() - t0:.3f} seconds.')
+print(f"Time elapsed: {time() - t0:.3f} seconds.")
