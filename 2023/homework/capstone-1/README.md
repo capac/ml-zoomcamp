@@ -16,7 +16,7 @@ The data analysis is organized in the following files as follows:
         * Pair plot of numerical features,
         * Box plots of death event versus age, creatinine phosphokinase, ejection fraction, platelets, serum creatinine and serum sodium aggregated on sex, diabetes, smoking and high blood pressure,
         * Bar plots of counts of death events, anaemia, diabetes, high blood pressure, sex and smoking.
-    * Model selection process with Logistic Regression, Decision Trees and Random Forests,
+    * Model selection process with Logistic Regression, Decision Trees, Random Forests and eXtreme Gradient Boosting (XGBoost),
     * Hyper-parameter tuning on Random Forests model using `GridSearchCV`,
     * Feature importance analysis plot with default hyperparameters values of the Random Forests model.
 
@@ -24,6 +24,7 @@ The data analysis is organized in the following files as follows:
     * Training the final model with the default hyperparameters values for the Random Forests model, taken from the Jupyter notebook file,
     * Saving the model and `DictVectorizer` class instance to pickle files,
     * Best F1 and AUC values with default Random Forest hyperparameters, at 0.769 and 0.834 respectively.
+        * Due to the small dataset, the default Random Forest hyperparameters give the best F1 and AUC values, and hyperparameter fine tuning doesn't improve these values.
 
 3. `predict.py`
     * Loading the model and `DictVectorizer` object from the `model.pkl` and `dv.pkl` files respectively,
@@ -40,6 +41,7 @@ The data analysis is organized in the following files as follows:
         * `pandas`,
         * `gunicorn`,
         * `flask`,
+        * `numpy`,
         * `scikit-learn` version 1.2.2,
         * `python` version 3.9.18.
 
@@ -52,7 +54,7 @@ The data analysis is organized in the following files as follows:
         * Login in with Docker credentials from Terminal: `docker login`
         * `docker tag capstone-project-1 capac/projects`
         * `docker push capac/projects`
-    * Running the file locally with `python predict-cloud.py` will trigger the model and produce a result. You may need to wait for several seconds for the outcome to appear, since Render needs to spin up the container if it's inactive.
+    * Running the file locally with `python predict-cloud.py` will trigger the model and produce a result. You may need to wait for several seconds for the outcome to appear in the terminal, since Render may need to spin up the container if it's inactive.
     * The image below gives an idea of the output for the remote Docker container with the model:
 
 ![](docker-output.png)
