@@ -37,10 +37,10 @@ custom_labels = [' '.join(col.split('_')).capitalize() for col in top_index_name
 fig, ax = plt.subplots()
 ax.bar(breed_sr.index[:top_num], breed_sr.values[:top_num], color=colors,)
 plt.setp(ax.get_xticklabels(), ha='right', rotation_mode='anchor', rotation=45)
-ax.set_xticks(range(10))
+ax.set_xticks(range(top_num))
 ax.set_xticklabels(custom_labels)
 ax.set_ylim([195, 255])
-ax.set_title(f'Top {top_num} dogs in data set')
+ax.set_title(f'Top {top_num} most numerous dog images in data set')
 
 Path.mkdir(Path.cwd() / 'plots', exist_ok=True)
 plt.savefig('plots/eda.png')
