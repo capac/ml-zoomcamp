@@ -10,3 +10,5 @@ As mentioned on the website, the Stanford Dogs dataset contains images of 120 br
 ## Data preparation
 
 Use `make_dataset.py` to download the [Stanford Dogs dataset](http://vision.stanford.edu/aditya86/ImageNetDogs "http://vision.stanford.edu/aditya86/ImageNetDogs") and extract the images and annotations in the `data/raw/Image` and `data/raw/Annotation` subdirectories.
+
+Use `data_selection.py` to pre-process the images by applying cropping that selects only the part of the image that contain the dog. Each dog breed folder is renamed by removing the alphanumeric prefix, which helps create a `tf.data.Dataset` object from image files in each directory.
