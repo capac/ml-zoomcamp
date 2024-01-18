@@ -11,4 +11,8 @@ As mentioned on the website, the Stanford Dogs dataset contains images of 120 br
 
 Use `make_dataset.py` to download the [Stanford Dogs dataset](http://vision.stanford.edu/aditya86/ImageNetDogs "http://vision.stanford.edu/aditya86/ImageNetDogs") and extract the images and annotations in the `data/raw/Image` and `data/raw/Annotation` subdirectories.
 
-Use `data_selection.py` to pre-process the images by applying cropping that selects only the part of the image that contain the dog. Each dog breed folder is renamed by removing the alphanumeric prefix, which helps create a `tf.data.Dataset` object from image files in each directory.
+Use `data_selection.py` to pre-process the images by applying cropping that selects only the part of the image that contain the dog. Each dog breed folder is renamed by removing the alphanumeric prefix, which helps create a `tf.data.Dataset` object from image files in each directory. I've decided to only use the top 10 folders with the most dog images, and each image to 299 x 299 pixels. I've also checked for data corruption in the images, and removed those if they had 'JFIF' in the header. There were none found in the dataset.
+
+## Data generation
+
+I used the `keras.utils.image_dataset_from_directory` class in Keras to generate a training and validation dataset split, with a batch size of 32.
