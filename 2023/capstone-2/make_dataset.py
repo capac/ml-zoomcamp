@@ -17,8 +17,8 @@ def download_data(url):
         urllib.request.urlretrieve(url, raw_data_file)
         with tarfile.open(raw_data_file) as data_tarball:
             data_tarball.extractall(path=raw_data_dir)
-    Path.unlink(raw_data_file)
-    print(f'Finished downloading and extracting {basename}.')
+        Path.unlink(raw_data_file)
+        print(f'Finished downloading and extracting {basename}.')
 
 
 if __name__ == "__main__":
