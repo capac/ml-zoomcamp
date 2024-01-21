@@ -35,7 +35,7 @@ if not processed_dir.exists():
         Path.mkdir(processed_dir / breed_name, exist_ok=True)
     print(f'''Created {len(os.listdir(processed_dir))} folders to store cropped images of the different breeds.''')
 else:
-    print(f'Folder {processed_dir} already exists.')
+    print(f'Folder {str(processed_dir)} already exists.')
 
 t0 = time()
 print(f'Saving {img_size}x{img_size} image sizes.')
@@ -57,6 +57,6 @@ if not list(processed_dir.glob('**/*.jpg')):
             img.save(str(processed_dir) + '/' + breed_name + '/' + breed_prefix + '.jpg')
             counter += 1
         print(f'Saved {counter} images in {breed_name} folder.')
-    print(f'Time elapsed: {round(time()-t0, 0)} seconds.')
+    print(f'Time elapsed: {round(time() - t0, 0)} seconds.')
 else:
-    print(f'Folder {processed_dir} with cropped images already exists.')
+    print(f'Folder {str(processed_dir)} with cropped images already exists.')
