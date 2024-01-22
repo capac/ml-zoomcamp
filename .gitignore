@@ -156,3 +156,5 @@ dmypy.json
 # TFLite files
 # *.tflite
 
+# data folders
+/home/jovyan/workspace/ml-zoomcamp/2023/capstone-2/data/raw/
