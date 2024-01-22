@@ -10,6 +10,8 @@ As mentioned on the website, the Stanford Dogs dataset contains images of 120 br
 
 * `make_dataset.py`
     * Downloads and extracts the Stanford Dogs dataset images and annotations.
+* `data_selection.py`
+    * Crops dog images for all 120 dog breeds. Use only if you want the complete data set for modeling.
 * `exploratory_data_analysis.py`
     * Shows bar plot of the top 10 folders by number of unique dog breed images. The bar plot itself is in the `plots` folder.
 * `notebook.ipynb`
@@ -38,4 +40,3 @@ The model is generated from a pre-trained convolution neural network from ImageN
 IMPORTANT: the model file itself hasn't been saved on GitHub due to the 100 MB large file constraint.
 
 ## Model deployment
-
