@@ -18,12 +18,10 @@ As mentioned on the website, the Stanford Dogs dataset contains images of 120 br
     * Crops dog images, and runs model training with hyperparameter fine-tuning, with plots of accuracy for the validation data, and saves the model with the best hyperparameters. **IMPORTANT: run notebook only after running the `make_dataset.py` script.**
 * `training.py`
     * It is a standalone file that achieves the same result as the notebook without validation accuracy plots, and saves the model with best hyperparameters as an HDF5 file. The HDF5 model file is named `xception_v1_48_0.968.h5`.
-* `predict.py`
+* `lambda_function.py`
+    * Contains lambda helper function for Docker container.
+* `test.py`
     * Run model on image test file in a local Docker container.
-* `predict-test.py`
-    * Run model on image test file in a local Docker container.
-* `predict-cloud.py`
-    * Run model on image test file in a remote Docker container on Render.
 
 ## Data preparation
 
