@@ -9,18 +9,19 @@ As mentioned on the website, the Stanford Dogs dataset contains images of 120 br
 ### Project files
 
 * `make_dataset.py`
-    * Downloads and extracts the Stanford Dogs dataset images and annotations,
+    * Downloads and extracts the Stanford Dogs dataset images and annotations.
 * `exploratory_data_analysis.py`
-    * Shows bar plot of the top 10 folders by number of unique images,
+    * Shows bar plot of the top 10 folders by number of unique dog breed images.
 * `notebook.ipynb`
-    * Crops dog images, and runs model training with hyperparameter fine-tuning, with plots of accuracy for the validation data, saving the model with the best hyperparameters,
+    * Crops dog images, and runs model training with hyperparameter fine-tuning, with plots of accuracy for the validation data, and saves the model with the best hyperparameters. IMPORTANT: run notebook only after running the `make_dataset.py` script.
 * `training.py`
-    * Achieves the same result as the notebook, without graphic plots,
+    * It is a standalone file that achieves the same result as the notebook without validation accuracy plots, and saves the model with best hyperparameters as an H5 file.
 * `predict.py`
-    * 
+    * Run model on image test file in a local Docker container.
 * `predict-test.py`
-    * 
+    * Run model on image test file in a local Docker container.
 * `predict-cloud.py`
+    * Run model on image test file in a remote Docker container on Render.
 
 ## Data preparation
 
@@ -32,4 +33,8 @@ Once `make_dataset.py` has finished downloading and extracting the images and an
 
 # Model training
 
-The model is generated from a pre-trained convolution neural network from ImageNet using transfer learning, and is accessed from the `tensorflow.keras.applications.xception.Xception` class in TensorFlow. I used the `keras.utils.image_dataset_from_directory` class in Keras to generate a training, validation and testing dataset split. 70% of the image dataset is used as the training set, while the remaining 30% is equally split between validation and testing datasets. Data augmentation was carried out on the data set, by horizontally flipping the images and by randomly adding a 10 degree rotation to the images. The dense, upper layers are built using the training dataset. Model hyperparameter fine-tuning was accomplished using different values for the laerning rate, for different sizes of an added internal layer, and for the dropout rate. The best values are saved and used to generate the final model, which is tested on the test set.
+The model is generated from a pre-trained convolution neural network from ImageNet using transfer learning, and is accessed from the `tensorflow.keras.applications.xception.Xception` class in TensorFlow. I used the `keras.utils.image_dataset_from_directory` class in Keras to generate a training, validation and testing dataset split. 70% of the image dataset is used as the training set, while the remaining 30% is equally split between validation and testing datasets. Data augmentation was carried out on the data set, by horizontally flipping the images and by randomly adding a 10 degree rotation to the images. The dense, upper layers are built using the training dataset. Model hyperparameter fine-tuning was accomplished using different values for the learning rate, for different sizes of an additional internal layer, and for the dropout rate. The best values are saved and used to generate the final model, which is tested on the test set.
+
+IMPORTANT: the model files haven't been saved on GitHub due to the large file constraint of over 100 MB.
+
+## Model deployment
