@@ -18,10 +18,14 @@ As mentioned on the website, the Stanford Dogs dataset contains images of 120 br
     * Crops dog images, and runs model training with hyperparameter fine-tuning, with plots of accuracy for the validation data, and saves the model with the best hyperparameters. **IMPORTANT: run notebook only after running the `make_dataset.py` script.**
 * `training.py`
     * It is a standalone file that achieves the same result as the notebook without validation accuracy plots, and saves the model with best hyperparameters as an HDF5 file. The HDF5 model file is named `xception_v1_48_0.968.h5`.
+* `Dockerfile`
+    * File with the commands and package requirements to build a local Docker image.
 * `lambda_function.py`
     * Contains lambda helper function for Docker container.
 * `test.py`
     * Run model on image test file in a local Docker container.
+* `requirements.txt`
+    * List of required packages to set up a local, working Python environment.
 
 ## Data preparation
 
@@ -37,4 +41,20 @@ The model is generated from a pre-trained convolution neural network from ImageN
 
 IMPORTANT: the model file itself hasn't been saved on GitHub due to the 100 MB large file constraint.
 
-## Model deployment
+## Containerization
+
+The `Dockerfile` provvided in the repository permits to build locally a Docker image using an AWS ECR Lambda instance (`public.ecr.aws/lambda/python:3.10`) in Python 3.10. The image will also contain [TF-Lite for AWS Lambda from Alexey Grigorev's repository](https://github.com/alexeygrigorev/tflite-aws-lambda "https://github.com/alexeygrigorev/tflite-aws-lambda"). In the build process, `lambda_function.py` and the TFLite model (`top_10_dog_breeds.tflite`) will be copied over to the image. Once the Docker app is running on your computer, to build and run the Docker image you need to launch the following two commands from the terminal command line:
+    * `docker build -t capstone-project-2 .`,
+    * `docker run -it --rm -p 8080:8080 capstone-project-2`.
+
+## Cloud deployment
+
+The Docker image is remotely hosted on [Render](https://render.com/ "https://render.com/"). To deploy the Docker image remotely, run the following commands:
+    * Login in with your Docker credentials from the terminal command line: `docker login`
+    * Run `docker tag capstone-project-2 capac/projects`.
+    * Run `docker push capac/projects`.
+
+Running the file locally with `python predict-cloud.py` will trigger the model and produce a result. You may need to wait for several seconds for the outcome to appear in the terminal, since Render may need to spin up the container if it's inactive.
+
+The image below gives an idea of the output for the remote Docker container with the model:
+
