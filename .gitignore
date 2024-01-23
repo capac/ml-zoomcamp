@@ -147,14 +147,14 @@ dmypy.json
 *.zip
 
 # JPG/JPEG images
-# *.jpg
-# *.jpeg
+*.jpg
+*.jpeg
 
 # H5 files
 *.h5
 
 # TFLite files
-# *.tflite
+*.tflite
 
 # data folders
 /home/jovyan/workspace/ml-zoomcamp/2023/capstone-2/data/raw/
