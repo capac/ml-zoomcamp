@@ -1,0 +1,4 @@
+skimage==0.19.*
+pillow==10.*
+tensorflow==2.12.*
+keras==2.12.*
