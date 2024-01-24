@@ -49,11 +49,11 @@ The data analysis is organized in the following files as follows:
     * Testing the model locally on the Docker container with Python 3.9.18 and Scikit-Learn 1.2.2, using two patient records, one with an adverse death outcome and one without. Requires docker running in the background. The Docker command is: `docker run -it --rm -p 9696:9696 capstone-project-1`.
 
 5. `predict-cloud.py`
-    * Testing the same model as above, remotely hosted on [Render](https://render.com/) on the Docker container with the same configuration, using the same two patient records, one with an adverse death outcome and one without.
+    * Testing the same model as above, remotely hosted on [Render](https://render.com/ "https://render.com/") on the Docker container with the same configuration, using the same two patient records, one with an adverse death outcome and one without.
     * Commands to push Docker container remotely:
-        * Login in with Docker credentials from Terminal: `docker login`
-        * `docker tag capstone-project-1 capac/projects`
-        * `docker push capac/projects`
+        * Login in with your Docker credentials from the terminal command line: `docker login`
+        * Run `docker image tag capstone-project-1:v1 capac/projects:capstone-project-1`.
+        * Run `docker image push capac/projects:capstone-project-1`.
     * Running the file locally with `python predict-cloud.py` will trigger the model and produce a result. You may need to wait for several seconds for the outcome to appear in the terminal, since Render may need to spin up the container if it's inactive.
     * The image below gives an idea of the output for the remote Docker container with the model:
 
