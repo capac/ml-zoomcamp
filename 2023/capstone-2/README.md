@@ -44,17 +44,21 @@ IMPORTANT: the model file itself hasn't been saved on GitHub due to the 100 MB l
 ## Containerization
 
 The `Dockerfile` provvided in the repository permits to build locally a Docker image using an AWS ECR Lambda instance (`public.ecr.aws/lambda/python:3.10`) in Python 3.10. The image will also contain [TF-Lite for AWS Lambda from Alexey Grigorev's repository](https://github.com/alexeygrigorev/tflite-aws-lambda "https://github.com/alexeygrigorev/tflite-aws-lambda"). In the build process, `lambda_function.py` and the TFLite model (`top_10_dog_breeds.tflite`) will be copied over to the image. Once the Docker app is running on your computer, to build and run the Docker image you need to launch the following two commands from the terminal command line:
-    * `docker build -t capstone-project-2 .`,
+    * `docker build -t capstone-project-2:v1 .`,
     * `docker run -it --rm -p 8080:8080 capstone-project-2`.
+
+Using the `test.py` Python script from another terminal, you can get a prediction from the model using an [online image of a Great Pyrenees dog](https://images.unsplash.com/photo-1636496430627-a7b203b4cc58?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D).
 
 ## Cloud deployment
 
 The Docker image is remotely hosted on [Render](https://render.com/ "https://render.com/"). To deploy the Docker image remotely, run the following commands:
     * Login in with your Docker credentials from the terminal command line: `docker login`
-    * Run `docker tag capstone-project-2 capac/projects`.
-    * Run `docker push capac/projects`.
+    * Run `docker image tag capstone-project-2:v1 capac/projects:capstone-project-2`.
+    * Run `docker image push capac/projects:capstone-project-2`.
 
-Running the file locally with `python predict-cloud.py` will trigger the model and produce a result. You may need to wait for several seconds for the outcome to appear in the terminal, since Render may need to spin up the container if it's inactive.
+I've used [Render](https://render.com/ "https://render.com/") to make the Docker image reachable online. Follow the instructions on Render to create a web service, and paste in the field the link to the Docker images from your DockerHub repository.
 
-The image below gives an idea of the output for the remote Docker container with the model:
+Running the file locally with `python test_cloud.py` will trigger the model and produce a result. You may need to wait for several seconds for the outcome to appear in the terminal, since Render may need to spin up the container if it's inactive.
+
+The image from the terminal prompt below gives an idea of the output for the remote Docker container with the model, using an image of a [Great Pyrenees dog](https://images.unsplash.com/photo-1636496430627-a7b203b4cc58?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D), which is the same image used above:
 
