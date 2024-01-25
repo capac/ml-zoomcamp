@@ -1,5 +1,7 @@
 # ML Zoomcamp 2023 – Second Capstone Project
 
+![Great Pyrenees Dog](https://images.unsplash.com/photo-1636496430627-a7b203b4cc58)
+
 ## Summary
 
 This computer vision project aims to build a convolutional neural network (CNN) using transfer learning for classification of 10 different dog breeds. The original dataset can be retrieved from the [ImageNet Dogs Dataset for Fine-grained Visual Categorization](http://vision.stanford.edu/aditya86/ImageNetDogs "http://vision.stanford.edu/aditya86/ImageNetDogs") from the [Stanford Vision and Learning Lab (SVL)](https://svl.stanford.edu/ "https://svl.stanford.edu/").
@@ -47,18 +49,17 @@ The `Dockerfile` provvided in the repository permits to build locally a Docker i
     * `docker build -t capstone-project-2:v1 .`,
     * `docker run -it --rm -p 8080:8080 capstone-project-2`.
 
-Using the `test.py` Python script from another terminal, you can get a prediction from the model using an [online image of a Great Pyrenees dog](https://images.unsplash.com/photo-1636496430627-a7b203b4cc58?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D).
+Using the `test.py` Python script from another terminal, you can get a prediction from the model using an [online image of a Great Pyrenees dog](https://images.unsplash.com/photo-1636496430627-a7b203b4cc58).
 
 ## Cloud deployment
 
-The Docker image is remotely hosted on [Render](https://render.com/ "https://render.com/"). To deploy the Docker image remotely, run the following commands:
-    * Login in with your Docker credentials from the terminal command line: `docker login`
-    * Run `docker image tag capstone-project-2:v1 capac/projects:capstone-project-2`.
-    * Run `docker image push capac/projects:capstone-project-2`.
+The Docker image is remotely hosted on [AWS](https://aws.amazon.com/ "https://aws.amazon.com/"). You need to install the [AWS command line tools](https://aws.amazon.com/cli/ "https://aws.amazon.com/cli/") in the terminal, and configure the tool the first time you use it. To deploy the Docker image remotely, run the following commands:
+    * `aws ecr get-login-password | docker login --username AWS --password-stdin $REMOTE_URI`
+    * `docker tag capstone-project-2:v1 $REMOTE_URI`
+    * `docker push $REMOTE_URI`
 
-I've used [Render](https://render.com/ "https://render.com/") to make the Docker image reachable online. Follow the instructions on Render to create a web service, and paste in the field the link to the Docker images from your DockerHub repository.
+The `$REMOTE_URI` is a variable that contains the full link to the Docker resource on AWS. Running the file locally with `python test_cloud.py` will trigger the model on the remote Docker image and produce an output in the terminal. You may need to wait for several seconds for the outcome to appear.
 
-Running the file locally with `python test_cloud.py` will trigger the model and produce a result. You may need to wait for several seconds for the outcome to appear in the terminal, since Render may need to spin up the container if it's inactive.
+The image from the terminal below gives an idea of the output for the remote Docker container with the model, using an image of a [Great Pyrenees dog](https://images.unsplash.com/photo-1636496430627-a7b203b4cc58), which is the same image referred to in the link above:
 
-The image from the terminal prompt below gives an idea of the output for the remote Docker container with the model, using an image of a [Great Pyrenees dog](https://images.unsplash.com/photo-1636496430627-a7b203b4cc58?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D), which is the same image used above:
-
+![](terminal_output.png)
