@@ -1,6 +1,6 @@
 # ML Zoomcamp 2023 – Second Capstone Project
 
-![Great Pyrenees Dog](https://images.unsplash.com/photo-1636496430627-a7b203b4cc58)
+![Selecting of Dog Breeds](data/test/dog_breeds.jpg)
 
 ## Summary
 
@@ -46,17 +46,19 @@ IMPORTANT: the model file itself hasn't been saved on GitHub due to the 100 MB l
 ## Containerization
 
 The `Dockerfile` provvided in the repository permits to build locally a Docker image using an AWS ECR Lambda instance (`public.ecr.aws/lambda/python:3.10`) in Python 3.10. The image will also contain [TF-Lite for AWS Lambda from Alexey Grigorev's repository](https://github.com/alexeygrigorev/tflite-aws-lambda "https://github.com/alexeygrigorev/tflite-aws-lambda"). In the build process, `lambda_function.py` and the TFLite model (`top_10_dog_breeds.tflite`) will be copied over to the image. Once the Docker app is running on your computer, to build and run the Docker image you need to launch the following two commands from the terminal command line:
-    * `docker build -t capstone-project-2:v1 .`,
-    * `docker run -it --rm -p 8080:8080 capstone-project-2`.
+
+ * `docker build -t capstone-project-2:v1 .`,
+ * `docker run -it --rm -p 8080:8080 capstone-project-2`.
 
 Using the `test.py` Python script from another terminal, you can get a prediction from the model using an [online image of a Great Pyrenees dog](https://images.unsplash.com/photo-1636496430627-a7b203b4cc58).
 
 ## Cloud deployment
 
 The Docker image is remotely hosted on [AWS](https://aws.amazon.com/ "https://aws.amazon.com/"). You need to install the [AWS command line tools](https://aws.amazon.com/cli/ "https://aws.amazon.com/cli/") in the terminal, and configure the tool the first time you use it. To deploy the Docker image remotely, run the following commands:
-    * `aws ecr get-login-password | docker login --username AWS --password-stdin $REMOTE_URI`
-    * `docker tag capstone-project-2:v1 $REMOTE_URI`
-    * `docker push $REMOTE_URI`
+
+ * `aws ecr get-login-password | docker login --username AWS --password-stdin $REMOTE_URI`
+ * `docker tag capstone-project-2:v1 $REMOTE_URI`
+ * `docker push $REMOTE_URI`
 
 The `$REMOTE_URI` is a variable that contains the full link to the Docker resource on AWS. Running the file locally with `python test_cloud.py` will trigger the model on the remote Docker image and produce an output in the terminal. You may need to wait for several seconds for the outcome to appear.
 
