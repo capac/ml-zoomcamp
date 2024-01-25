@@ -8,6 +8,6 @@ RUN pip install numpy
 
 COPY ["lambda_function.py", "top_10_dog_breeds.tflite", "./"]
 
-ENV MODEL_NAME=top_10_dog_breeds.tflite
+ENV MODEL_NAME='top_10_dog_breeds.tflite'
 
 CMD [ "lambda_function.lambda_handler" ]
