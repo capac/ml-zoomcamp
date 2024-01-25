@@ -33,6 +33,8 @@ As mentioned on the website, the Stanford Dogs dataset contains images of 120 br
 
 First thing to do, before running `notebook.ipynb`, is to run `make_dataset.py` to download the complete [Stanford Dogs dataset](http://vision.stanford.edu/aditya86/ImageNetDogs "http://vision.stanford.edu/aditya86/ImageNetDogs") and extract the images and annotations in the `data/raw/Image` and `data/raw/Annotation` subdirectories. The complete dataset contains 120 different dog breeds and will require a lot of compute resources and time. I decided to concentrate only on the top 10 folder with the highest number of dog images. The Jupyter notebook selects and crops these dog breed image folders for you. The number of unique images in the top 10 folders is shown in the exploratory data analysis bar plot, which you can generate by running `exploratory_data_analysis.py`, the bar plot itself is in the `plots` folder.
 
+![Number of unique images in the top 10 folders](plots/eda.png)
+
 ## Data generation
 
 Once `make_dataset.py` has finished downloading and extracting the images and annotations, you may either run the `notebook.ipynb` Jupyter notebook, or run the `training.py` file. Both files accomplish the same goal: the images from the 10 most numerous subfolders of dog images are selected and cropped to 299 x 299 pixels to solely contain the image of the dog. Each dog breed folder is renamed by removing the alphanumeric prefix, which helps create a `tf.data.Dataset` object from image files in each directory. I've also checked for data corruption in the images, and removed those if they had 'JFIF' in the header. There were none found in the dataset.
