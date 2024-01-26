@@ -2,7 +2,7 @@
 
 <figure>
     <img src="data/test/dog_breeds.jpg" alt="Selection of dog breeds from Unsplash" />
-    <center><figcaption>Selection of dog breeds from Unsplash</figcaption></center>
+    <figcaption text-align="center">Selection of dog breeds from Unsplash</figcaption>
 </figure>
 
 ## Summary
