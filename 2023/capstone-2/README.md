@@ -1,6 +1,9 @@
 # ML Zoomcamp 2023 – Second Capstone Project
 
-![Selecting of Dog Breeds](data/test/dog_breeds.jpg)
+<figure>
+    <img src="data/test/dog_breeds.jpg" alt="Selection of dog breeds from Unsplash" />
+    <center><figcaption>Selection of dog breeds from Unsplash</figcaption></center>
+</figure>
 
 ## Summary
 
