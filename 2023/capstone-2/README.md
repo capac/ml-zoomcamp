@@ -1,9 +1,11 @@
 # ML Zoomcamp 2023 – Second Capstone Project
 
+<p align="center">
 <figure>
     <img src="data/test/dog_breeds.jpg" alt="Selection of dog breeds from Unsplash" />
-    <figcaption text-align="center">Selection of dog breeds from Unsplash</figcaption>
+    <p style="text-align: center;">Selection of dog breeds from Unsplash</p>
 </figure>
+</p>
 
 ## Summary
 
@@ -42,7 +44,9 @@ First thing to do, before running `notebook.ipynb`, is to run `make_dataset.py` 
 
 The Jupyter notebook selects and crops these dog breed image folders for you. The number of unique images in the top 10 folders is shown in the exploratory data analysis bar plot, which you can generate by running `exploratory_data_analysis.py`, the bar plot itself is shown below.
 
+<p align="center">
 <img src="plots/eda.png" alt="eda" width="650"/>
+</p>
 
 ## Data generation
 
