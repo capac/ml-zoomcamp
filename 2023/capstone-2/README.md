@@ -20,20 +20,26 @@ As mentioned on the website, the Stanford Dogs dataset contains images of 120 br
     * Crops dog images, and runs model training with hyperparameter fine-tuning, with plots of accuracy for the validation data, and saves the model with the best hyperparameters. **IMPORTANT: run notebook only after running the `make_dataset.py` script.**
 * `training.py`
     * It is a standalone file that achieves the same result as the notebook without validation accuracy plots, and saves the model with best hyperparameters as an HDF5 file. The HDF5 model file is named `xception_v1_48_0.968.h5`.
+* `convert_model.py`
+    * Converts `xception_v1_48_0.968.h5` HDF5 file to a TFLite file named `top_10_dog_breeds.tflite`.
 * `Dockerfile`
     * File with the commands and package requirements to build a local Docker image.
 * `lambda_function.py`
     * Contains lambda helper function for Docker container.
 * `test.py`
-    * Run model on image test file in a local Docker container.
+    * Run model on test image file in local Docker container.
+* `test_cloud.py`
+    * Run model on test image file in remote Docker container.
 * `requirements.txt`
     * List of required packages to set up a local, working Python environment.
 
 ## Data preparation
 
-First thing to do, before running `notebook.ipynb`, is to run `make_dataset.py` to download the complete [Stanford Dogs dataset](http://vision.stanford.edu/aditya86/ImageNetDogs "http://vision.stanford.edu/aditya86/ImageNetDogs") and extract the images and annotations in the `data/raw/Image` and `data/raw/Annotation` subdirectories. The complete dataset contains 120 different dog breeds and will require a lot of compute resources and time. I decided to concentrate only on the top 10 folder with the highest number of dog images. The Jupyter notebook selects and crops these dog breed image folders for you. The number of unique images in the top 10 folders is shown in the exploratory data analysis bar plot, which you can generate by running `exploratory_data_analysis.py`, the bar plot itself is in the `plots` folder.
+First thing to do, before running `notebook.ipynb`, is to run `make_dataset.py` to download the complete [Stanford Dogs dataset](http://vision.stanford.edu/aditya86/ImageNetDogs "http://vision.stanford.edu/aditya86/ImageNetDogs") and extract the images and annotations in the `data/raw/Image` and `data/raw/Annotation` subdirectories. The complete dataset contains 120 different dog breeds and will require a lot of compute resources and time. I decided to concentrate only on the top 10 folder with the highest number of dog images, which are the Afghan hound, Bernese mountain dog, Great pyrenees, Irish wolfhound, Leonberg, Maltese dog, Pomeranian, Samoyed, Scottish deerhound and Shih tzu.
 
-<center><img src="plots/eda.png" alt="eda" width="650"/></center>
+The Jupyter notebook selects and crops these dog breed image folders for you. The number of unique images in the top 10 folders is shown in the exploratory data analysis bar plot, which you can generate by running `exploratory_data_analysis.py`, the bar plot itself is shown below.
+
+<img src="plots/eda.png" alt="eda" width="650"/>
 
 ## Data generation
 
@@ -41,13 +47,13 @@ Once `make_dataset.py` has finished downloading and extracting the images and an
 
 ## Model training
 
-The model is generated from a pre-trained convolution neural network from ImageNet using transfer learning, and is accessed from the `tensorflow.keras.applications.xception.Xception` class in TensorFlow. I used the `keras.utils.image_dataset_from_directory` class in Keras to generate a training, validation and testing dataset split. 70% of the image dataset is used as the training set, while the remaining 30% is equally split between validation and testing datasets. Data augmentation was carried out on the data set, by horizontally flipping the images and by randomly adding a 10 degree rotation to the images. The dense, upper layers are built using the training dataset. Model hyperparameter fine-tuning was accomplished using different values for the learning rate, different sizes of an additional internal layer, and different dropout rates. The best values are saved and used to generate the final model, saved as `xception_v1_48_0.968.h5`, and is tested on the test set to achieve an accuracy of 92.19%.
+The model is generated from a pre-trained convolution neural network from ImageNet using transfer learning, and is accessed from the `tensorflow.keras.applications.xception.Xception` class in TensorFlow. I used the `keras.utils.image_dataset_from_directory` class in Keras to generate a training, validation and testing dataset split. 70% of the image dataset is used as the training set, while the remaining 30% is equally split between validation and testing datasets. Data augmentation was carried out on the data set, by horizontally flipping the images and by randomly adding a 10 degree rotation to the images. The dense, upper layers are built using the training dataset. Model hyperparameter fine-tuning was accomplished using different values for the learning rate, different sizes of an additional internal layer, and different dropout rates. The best values are saved and used to generate the final model, saved as `xception_v1_48_0.968.h5`, and is tested on the test set to achieve an accuracy of 92.19%. The model file has then been converted into a TFLite file named `top_10_dog_breeds.tflite`, which is used in the Docker image created successively.
 
-IMPORTANT: the model file itself hasn't been saved on GitHub due to the 100 MB large file constraint.
+IMPORTANT: the HDF5 and TLFite model files haven't been saved on GitHub due to the 100 MB large file constraint.
 
 ## Containerization
 
-The `Dockerfile` provvided in the repository permits to build locally a Docker image using an AWS ECR Lambda instance (`public.ecr.aws/lambda/python:3.10`) in Python 3.10. The image will also contain [TF-Lite for AWS Lambda from Alexey Grigorev's repository](https://github.com/alexeygrigorev/tflite-aws-lambda "https://github.com/alexeygrigorev/tflite-aws-lambda"). In the build process, `lambda_function.py` and the TFLite model (`top_10_dog_breeds.tflite`) will be copied over to the image. Once the Docker app is running on your computer, to build and run the Docker image you need to launch the following two commands from the terminal command line:
+The `Dockerfile` provided in the repository permits to build locally a Docker image using an AWS ECR Lambda instance (`public.ecr.aws/lambda/python:3.10`) in Python 3.10. The image will also contain [TF-Lite for AWS Lambda from Alexey Grigorev's repository](https://github.com/alexeygrigorev/tflite-aws-lambda "https://github.com/alexeygrigorev/tflite-aws-lambda"). In the build process, `lambda_function.py` and the TFLite model (`top_10_dog_breeds.tflite`) will be copied over to the image. Once the Docker app is running on your computer, to build and run the Docker image you need to launch the following two commands from the terminal command line:
 
  * `docker build -t capstone-project-2:v1 .`,
  * `docker run -it --rm -p 8080:8080 capstone-project-2`.
