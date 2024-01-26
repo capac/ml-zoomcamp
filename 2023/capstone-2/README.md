@@ -3,8 +3,8 @@
 <p align="center">
 <figure>
     <img src="data/test/dog_breeds.jpg" alt="Selection of dog breeds from Unsplash" />
-    <p style="text-align: center;">Selection of dog breeds from Unsplash</p>
 </figure>
+<p style="text-align: center;">Selection of dog breeds from Unsplash</p>
 </p>
 
 ## Summary
