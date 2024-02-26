@@ -3,7 +3,7 @@
 
 import os
 import re
-from pandas import Series
+from pandas import DataFrame
 from pathlib import Path
 import matplotlib.pyplot as plt
 
@@ -24,18 +24,22 @@ for breed_dir in breed_dir_list:
     full_breed_dir = Path.cwd() / images_dir / breed_dir
     breed_name = re.sub(r'(n[0-9]+)-(\w+\-?\_?)', r'\2', breed_dir)
     breed_name = re.sub(r'-', r'_', breed_name.lower())
-    breed_dict[breed_name] = len(list(full_breed_dir.glob('**/*.jpg')))
+    breed_dict.setdefault('breed', []).append(breed_name)
+    breed_dict.setdefault('num_photos', []).append(len(list(full_breed_dir.glob('**/*.jpg'))))
+    breed_dict.setdefault('directory', []).append(breed_dir)
 
-breed_sr = Series(breed_dict)
-breed_sr.sort_values(ascending=False, inplace=True)
-breed_sr.head(20)
+breed_df = DataFrame(breed_dict)
+breed_df.sort_values(by='num_photos', ascending=False, inplace=True)
+breed_df.reset_index(drop=True, inplace=True)
+# print(breed_df.head(30))
+# print(list(breed_df.directory.iloc[:30].values))
 
 top_num = 10
-top_index_names = breed_sr.index[:top_num]
+top_index_names = breed_df['breed'].iloc[:top_num]
 custom_labels = [' '.join(col.split('_')).capitalize() for col in top_index_names]
 
 fig, ax = plt.subplots()
-ax.bar(breed_sr.index[:top_num], breed_sr.values[:top_num], color=colors,)
+ax.bar(breed_df['breed'].iloc[:top_num], breed_df['num_photos'].iloc[:top_num], color=colors,)
 plt.setp(ax.get_xticklabels(), ha='right', rotation_mode='anchor', rotation=45)
 ax.set_xticks(range(top_num))
 ax.set_xticklabels(custom_labels)
