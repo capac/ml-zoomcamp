@@ -17,6 +17,8 @@ except ImportError:
                         check=True, capture_output=True, text=True)
     if p1.stderr:
           print(p1.stderr)
+    else:
+        print('Installed scikit-image with pip.')
 from skimage.io import imread
 from skimage.transform import resize
 
