@@ -9,7 +9,7 @@ model = keras.models.load_model(original_model_filename, compile=False)
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
 tflite_model = converter.convert()
 
-tflite_filename = 'top_30_dog_breeds.tflite'
+tflite_filename = 'models_30_breeds/top_30_dog_breeds.tflite'
 with open(tflite_filename, 'wb') as f_out:
     f_out.write(tflite_model)
 
