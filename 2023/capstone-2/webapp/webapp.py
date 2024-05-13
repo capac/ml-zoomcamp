@@ -2,8 +2,9 @@ import streamlit as st
 from PIL import Image
 import tensorflow as tf
 import numpy as np
+from pathlib import Path
 
-model_path = '../models_120_breeds/xception_v1_21_0.797.h5'
+model_path = Path.cwd() / 'models_120_breeds/xception_v1_21_0.797.h5'
 
 
 # Load your trained model
