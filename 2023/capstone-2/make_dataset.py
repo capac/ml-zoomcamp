@@ -23,6 +23,7 @@ def download_data(url):
 
 if __name__ == "__main__":
     images_url = 'http://vision.stanford.edu/aditya86/ImageNetDogs/images.tar'
-    annotations_url = 'http://vision.stanford.edu/aditya86/ImageNetDogs/annotation.tar'
+    annotations_url = 'http://vision.stanford.edu/aditya86/'\
+                      'ImageNetDogs/annotation.tar'
     download_data(images_url)
     download_data(annotations_url)
