@@ -4,7 +4,8 @@ from PIL import Image
 import io
 
 # Define your Lambda endpoint URL
-lambda_endpoint = "YOUR_LAMBDA_ENDPOINT_URL_HERE"
+host = "rv4m3mgwb5.execute-api.eu-west-1.amazonaws.com/test"
+lambda_endpoint = f"https://{host}/predict"
 
 
 # Function to make predictions using AWS Lambda
@@ -19,7 +20,7 @@ def predict_dog_breed(image):
         response = requests.post(lambda_endpoint, data=img_byte_arr)
 
         # Parse the response
-        predicted_breed = response.json().get('predicted_breed')
+        predicted_breed = response.json()  # .get('predicted_breed')
 
         return predicted_breed
 
