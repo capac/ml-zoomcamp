@@ -6,7 +6,7 @@ from io import BytesIO
 from urllib import request
 from PIL import Image
 # import tensorflow.lite as tflite
-import tflite_runtime.interpreter as tflite
+import tflite_runtime.interpreter as tflite  # type: ignore
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 MODEL_NAME = os.getenv('MODEL_NAME', 'top_10_dog_breeds.tflite')
@@ -34,8 +34,9 @@ input_index = interpreter.get_input_details()[0]['index']
 output_index = interpreter.get_output_details()[0]['index']
 
 
-names = ['afghan_hound', 'bernese_mountain_dog', 'great_pyrenees', 'irish_wolfhound', 'leonberg',
-         'maltese_dog', 'pomeranian', 'samoyed', 'scottish_deerhound', 'shih_tzu']
+names = ['afghan_hound', 'bernese_mountain_dog', 'great_pyrenees',
+         'irish_wolfhound', 'leonberg', 'maltese_dog', 'pomeranian',
+         'samoyed', 'scottish_deerhound', 'shih_tzu']
 
 
 def predict(url):
