@@ -1,8 +1,8 @@
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
 import tensorflow as tf
 from tensorflow import keras
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 original_model_filename = 'xception_v1_21_0.797.h5'
 model = keras.models.load_model(original_model_filename, compile=False)
