@@ -6,8 +6,8 @@ RUN pip install pillow
 
 RUN pip install numpy
 
-COPY ["lambda_function.py", "model_120_breeds/top_120_dog_breeds.tflite", "./"]
+COPY ["lambda_function.py", "top_120_dog_breeds.tflite", "./"]
 
-ENV MODEL_NAME='top_10_dog_breeds.tflite'
+ENV MODEL_NAME='top_120_dog_breeds.tflite'
 
 CMD [ "lambda_function.lambda_handler" ]
