@@ -3,28 +3,32 @@
 import os
 import numpy as np
 from io import BytesIO
-from urllib import request
+# from urllib import request
 from PIL import Image
-# import tensorflow.lite as tflite
-import tflite_runtime.interpreter as tflite  # type: ignore
+import tensorflow.lite as tflite
+# import tflite_runtime.interpreter as tflite  # type: ignore
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 MODEL_NAME = os.getenv('MODEL_NAME', 'top_120_dog_breeds.tflite')
 
 
-def download_image(url):
-    with request.urlopen(url) as resp:
-        buffer = resp.read()
-    stream = BytesIO(buffer)
-    img = Image.open(stream)
-    return img
+# def download_image(url):
+#     with request.urlopen(url) as resp:
+#         buffer = resp.read()
+#     stream = BytesIO(buffer)
+#     img = Image.open(stream)
+#     return img
 
 
-def prepare_image(img, target_size):
-    if img.mode != 'RGB':
-        img = img.convert('RGB')
-    img = img.resize(target_size, Image.NEAREST)
-    return img
+def prepare_image(image, target_size):
+    image = Image.open(image)
+    img_byte_arr = BytesIO()
+    image.save(img_byte_arr, format='PNG')
+    img_byte_arr = img_byte_arr.getvalue()
+    if image.mode != 'RGB':
+        image = image.convert('RGB')
+    image = image.resize(target_size, Image.NEAREST)
+    return image
 
 
 interpreter = tflite.Interpreter(model_path=MODEL_NAME)
@@ -33,46 +37,46 @@ interpreter.allocate_tensors()
 input_index = interpreter.get_input_details()[0]['index']
 output_index = interpreter.get_output_details()[0]['index']
 
-names = ['silky_terrier', 'scottish_deerhound', 'chesapeake_bay_retriever',
-         'ibizan_hound', 'wire_haired_fox_terrier', 'saluki', 'cocker_spaniel',
-         'schipperke', 'borzoi', 'pembroke', 'komondor',
-         'staffordshire_bullterrier', 'standard_poodle', 'eskimo_dog',
-         'english_foxhound', 'golden_retriever', 'sealyham_terrier',
-         'japanese_spaniel', 'miniature_schnauzer', 'malamute', 'malinois',
-         'pekinese', 'giant_schnauzer', 'mexican_hairless', 'doberman',
-         'standard_schnauzer', 'dhole', 'german_shepherd',
-         'bouvier_des_flandres', 'siberian_husky', 'norwich_terrier',
-         'irish_terrier', 'norfolk_terrier', 'saint_bernard', 'border_terrier',
-         'briard', 'tibetan_mastiff', 'bull_mastiff', 'maltese_dog',
-         'kerry_blue_terrier', 'kuvasz', 'greater_swiss_mountain_dog',
-         'lakeland_terrier', 'blenheim_spaniel', 'basset',
-         'west_highland_white_terrier', 'chihuahua', 'border_collie',
-         'redbone', 'irish_wolfhound', 'bluetick', 'miniature_poodle',
-         'cardigan', 'entlebucher', 'norwegian_elkhound',
-         'german_short_haired_pointer', 'bernese_mountain_dog', 'papillon',
-         'tibetan_terrier', 'gordon_setter', 'american_staffordshire_terrier',
-         'vizsla', 'kelpie', 'weimaraner', 'miniature_pinscher', 'boxer',
-         'chow', 'old_english_sheepdog', 'pug', 'rhodesian_ridgeback',
-         'scotch_terrier', 'shih_tzu', 'affenpinscher', 'whippet',
-         'sussex_spaniel', 'otterhound', 'flat_coated_retriever',
-         'english_setter', 'italian_greyhound', 'labrador_retriever',
-         'collie', 'cairn', 'rottweiler', 'australian_terrier', 'toy_terrier',
-         'shetland_sheepdog', 'african_hunting_dog', 'newfoundland',
-         'walker_hound', 'lhasa', 'beagle', 'samoyed', 'great_dane',
-         'airedale', 'bloodhound', 'irish_setter', 'keeshond',
-         'dandie_dinmont', 'basenji', 'bedlington_terrier', 'appenzeller',
-         'clumber', 'toy_poodle', 'great_pyrenees', 'english_springer',
-         'afghan_hound', 'brittany_spaniel', 'welsh_springer_spaniel',
-         'boston_bull', 'dingo', 'soft_coated_wheaten_terrier',
-         'curly_coated_retriever', 'french_bulldog', 'irish_water_spaniel',
-         'pomeranian', 'brabancon_griffon', 'yorkshire_terrier',
-         'groenendael', 'leonberg', 'black_and_tan_coonhound']
+names = ['affenpinscher', 'afghan_hound', 'african_hunting_dog',
+         'airedale', 'american_staffordshire_terrier', 'appenzeller',
+         'australian_terrier', 'basenji', 'basset', 'beagle',
+         'bedlington_terrier', 'bernese_mountain_dog',
+         'black_and_tan_coonhound', 'blenheim_spaniel', 'bloodhound',
+         'bluetick', 'border_collie', 'border_terrier', 'borzoi',
+         'boston_bull', 'bouvier_des_flandres', 'boxer',
+         'brabancon_griffon', 'briard', 'brittany_spaniel',
+         'bull_mastiff', 'cairn', 'cardigan', 'chesapeake_bay_retriever',
+         'chihuahua', 'chow', 'clumber', 'cocker_spaniel', 'collie',
+         'curly_coated_retriever', 'dandie_dinmont', 'dhole', 'dingo',
+         'doberman', 'english_foxhound', 'english_setter', 'english_springer',
+         'entlebucher', 'eskimo_dog', 'flat_coated_retriever',
+         'french_bulldog', 'german_shepherd', 'german_short_haired_pointer',
+         'giant_schnauzer', 'golden_retriever', 'gordon_setter', 'great_dane',
+         'great_pyrenees', 'greater_swiss_mountain_dog', 'groenendael',
+         'ibizan_hound', 'irish_setter', 'irish_terrier',
+         'irish_water_spaniel', 'irish_wolfhound', 'italian_greyhound',
+         'japanese_spaniel', 'keeshond', 'kelpie', 'kerry_blue_terrier',
+         'komondor', 'kuvasz', 'labrador_retriever', 'lakeland_terrier',
+         'leonberg', 'lhasa', 'malamute', 'malinois', 'maltese_dog',
+         'mexican_hairless', 'miniature_pinscher', 'miniature_poodle',
+         'miniature_schnauzer', 'newfoundland', 'norfolk_terrier',
+         'norwegian_elkhound', 'norwich_terrier', 'old_english_sheepdog',
+         'otterhound', 'papillon', 'pekinese', 'pembroke', 'pomeranian',
+         'pug', 'redbone', 'rhodesian_ridgeback', 'rottweiler',
+         'saint_bernard', 'saluki', 'samoyed', 'schipperke', 'scotch_terrier',
+         'scottish_deerhound', 'sealyham_terrier', 'shetland_sheepdog',
+         'shih_tzu', 'siberian_husky', 'silky_terrier',
+         'soft_coated_wheaten_terrier', 'staffordshire_bullterrier',
+         'standard_poodle', 'standard_schnauzer', 'sussex_spaniel',
+         'tibetan_mastiff', 'tibetan_terrier', 'toy_poodle', 'toy_terrier',
+         'vizsla', 'walker_hound', 'weimaraner', 'welsh_springer_spaniel',
+         'west_highland_white_terrier', 'whippet', 'wire_haired_fox_terrier',
+         'yorkshire_terrier']
 
 
-def predict(url):
-    img = download_image(url)
+def predict(img):
+    # img = download_image(url)
     img = prepare_image(img, target_size=(150, 150))
-
     x = np.array(img, dtype='float32')
     X = np.array([x])
 
@@ -81,14 +85,13 @@ def predict(url):
 
     preds = interpreter.get_tensor(output_index)
     float_predictions = preds[0].tolist()
-    return dict(zip(names, float_predictions))
+    unsorted_dict = dict(zip(names, float_predictions))
+    return sorted([(val, key) for key, val in unsorted_dict.items()],
+                  reverse=True)[:10]
 
 
 def lambda_handler(event, context):
-    url = event['url']
-    pred = predict(url)
-    result = {
-        'prediction': pred
-    }
-
+    file = event['file']
+    pred = predict(file)
+    result = {'prediction': pred}
     return result
