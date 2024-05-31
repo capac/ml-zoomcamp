@@ -3,21 +3,12 @@
 import os
 import numpy as np
 from io import BytesIO
-# from urllib import request
 from PIL import Image
 import tensorflow.lite as tflite
 # import tflite_runtime.interpreter as tflite  # type: ignore
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 MODEL_NAME = os.getenv('MODEL_NAME', 'top_120_dog_breeds.tflite')
-
-
-# def download_image(url):
-#     with request.urlopen(url) as resp:
-#         buffer = resp.read()
-#     stream = BytesIO(buffer)
-#     img = Image.open(stream)
-#     return img
 
 
 def prepare_image(image, target_size):
@@ -75,7 +66,6 @@ names = ['affenpinscher', 'afghan_hound', 'african_hunting_dog',
 
 
 def predict(img):
-    # img = download_image(url)
     img = prepare_image(img, target_size=(150, 150))
     x = np.array(img, dtype='float32')
     X = np.array([x])
