@@ -33,9 +33,10 @@ def predict_dog_breed(image):
         response.raise_for_status()
 
         # Parse the response
-        predicted_breed_list = response.json().get('image')
-        predicted_breed = json.loads(predicted_breed_list)['predicted_breed']
-        return dict(predicted_breed)
+        predict_breed_list = response.json().get('image')
+        predict_breed = json.loads(predict_breed_list)['predicted_breed']
+        predict_breed_dict = dict(predict_breed)
+        return predict_breed_dict
 
     except requests.exceptions.RequestException as e:
         st.error(f"Request failed: {e}")
@@ -54,7 +55,8 @@ uploaded_file = st.file_uploader("Choose an image of a dog...",
 if uploaded_file is not None:
     # Open and display the uploaded image
     image = Image.open(uploaded_file)
-    st.image(image, caption='Uploaded Image', use_column_width=True)
+    st.image(image, caption='Uploaded Image',
+             use_column_width=True)
 
     # Make predictions using AWS Lambda
     predicted_breed = predict_dog_breed(image)

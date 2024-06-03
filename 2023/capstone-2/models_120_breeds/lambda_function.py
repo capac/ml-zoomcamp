@@ -82,8 +82,11 @@ def predict(image_data):
     preds = interpreter.get_tensor(output_index)
     float_predictions = preds[0].tolist()
     unsorted_dict = dict(zip(names, float_predictions))
-    return sorted([(val, key) for key, val in unsorted_dict.items()],
-                  reverse=True)[:10]
+    sorted_list = sorted([(val, key) for key, val in
+                          unsorted_dict.items()], reverse=True)[:10]
+    predict_breed_probs = [(key, np.round(1/(1 + np.exp(-float(val))), 4))
+                           for val, key in dict(sorted_list).items()]
+    return predict_breed_probs
 
 
 def lambda_handler(event, context):
