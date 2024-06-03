@@ -4,7 +4,7 @@ RUN pip install https://github.com/alexeygrigorev/tflite-aws-lambda/raw/main/tfl
 
 RUN pip install pillow
 
-RUN pip install numpy
+RUN pip install requests
 
 COPY ["lambda_function.py", "top_120_dog_breeds.tflite", "./"]
 
