@@ -1,32 +1,16 @@
 #!/usr/bin/env python
 
 import os
+import requests
 import numpy as np
+import base64
 from io import BytesIO
 from PIL import Image
-import tensorflow.lite as tflite
-# import tflite_runtime.interpreter as tflite  # type: ignore
+import json
+import tflite_runtime.interpreter as tflite  # type: ignore
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 MODEL_NAME = os.getenv('MODEL_NAME', 'top_120_dog_breeds.tflite')
-
-
-def prepare_image(image, target_size):
-    image = Image.open(image)
-    img_byte_arr = BytesIO()
-    image.save(img_byte_arr, format='PNG')
-    img_byte_arr = img_byte_arr.getvalue()
-    if image.mode != 'RGB':
-        image = image.convert('RGB')
-    image = image.resize(target_size, Image.NEAREST)
-    return image
-
-
-interpreter = tflite.Interpreter(model_path=MODEL_NAME)
-interpreter.allocate_tensors()
-
-input_index = interpreter.get_input_details()[0]['index']
-output_index = interpreter.get_output_details()[0]['index']
 
 names = ['affenpinscher', 'afghan_hound', 'african_hunting_dog',
          'airedale', 'american_staffordshire_terrier', 'appenzeller',
@@ -64,9 +48,31 @@ names = ['affenpinscher', 'afghan_hound', 'african_hunting_dog',
          'west_highland_white_terrier', 'whippet', 'wire_haired_fox_terrier',
          'yorkshire_terrier']
 
+interpreter = tflite.Interpreter(model_path=MODEL_NAME)
+interpreter.allocate_tensors()
 
-def predict(img):
-    img = prepare_image(img, target_size=(150, 150))
+input_index = interpreter.get_input_details()[0]['index']
+output_index = interpreter.get_output_details()[0]['index']
+
+
+def _preprocess_image(image_data):
+    # Decode the base64-encoded image
+    image_data = base64.b64decode(image_data)
+    # Prepare the image for sending
+    image = Image.open(BytesIO(image_data))
+    return image
+
+
+def _prepare_image(img, target_size):
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+    img = img.resize(target_size, Image.NEAREST)
+    return img
+
+
+def predict(image_data):
+    img = _preprocess_image(image_data)
+    img = _prepare_image(img, target_size=(150, 150))
     x = np.array(img, dtype='float32')
     X = np.array([x])
 
@@ -81,7 +87,31 @@ def predict(img):
 
 
 def lambda_handler(event, context):
-    file = event['file']
-    pred = predict(file)
-    result = {'prediction': pred}
-    return result
+    try:
+        # Check if image is present
+        if 'image' not in event:
+            return {
+                'statusCode': 400,
+                'image': json.dumps('No image data found in the request')
+            }
+
+        # Get the image data from the request
+        image_data = event['image']
+        prediction = predict(image_data)
+
+        return {
+            'statusCode': 200,
+            'image': json.dumps({'predicted_breed': prediction}),
+            'headers': {'Content-Type': 'application/json'}
+        }
+
+    except requests.exceptions.RequestException as e:
+        return {
+            'statusCode': 400,
+            'image': json.dumps(f"Request failed: {str(e)}")
+        }
+    except Exception as e:
+        return {
+            'statusCode': 400,
+            'image': json.dumps(f"Error processing the image: {str(e)}")
+        }
