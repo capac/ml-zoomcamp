@@ -1,31 +1,46 @@
 import streamlit as st
 import requests
 from PIL import Image
-import io
+from io import BytesIO
+import base64
+import json
 
 # Define your Lambda endpoint URL
-host = "rv4m3mgwb5.execute-api.eu-west-1.amazonaws.com/test"
-lambda_endpoint = f"https://{host}/predict"
+# host = "rv4m3mgwb5.execute-api.eu-west-1.amazonaws.com/test"
+host = "localhost:9000/2015-03-31/functions/function/invocations"
+lambda_endpoint = f"http://{host}"
 
 
 # Function to make predictions using AWS Lambda
 def predict_dog_breed(image):
     try:
         # Convert the image to bytes
-        img_byte_arr = io.BytesIO()
+        img_byte_arr = BytesIO()
         image.save(img_byte_arr, format='PNG')
         img_byte_arr = img_byte_arr.getvalue()
 
+        # Encode image to base64
+        img_base64 = base64.b64encode(img_byte_arr).decode('utf-8')
+
         # Make a POST request to your Lambda function
-        response = requests.post(lambda_endpoint, data=img_byte_arr)
+        headers = {'Content-Type': 'application/json'}
+        payload = {'image': img_base64}
+
+        response = requests.post(lambda_endpoint,
+                                 json=payload,
+                                 headers=headers)
+        # Check if the request was successful
+        response.raise_for_status()
 
         # Parse the response
-        predicted_breed = response.json()  # .get('predicted_breed')
+        predicted_breed_list = response.json().get('image')
+        predicted_breed = json.loads(predicted_breed_list)['predicted_breed']
+        return dict(predicted_breed)
 
-        return predicted_breed
-
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
+    except requests.exceptions.RequestException as e:
+        st.error(f"Request failed: {e}")
+    except ValueError as e:
+        st.error(f"Invalid response: {e}")
 
 
 # Set up the Streamlit app
