@@ -6,9 +6,9 @@ import base64
 import json
 
 # Define your Lambda endpoint URL
-# host = "rv4m3mgwb5.execute-api.eu-west-1.amazonaws.com/test"
-host = "localhost:9000/2015-03-31/functions/function/invocations"
-lambda_endpoint = f"http://{host}"
+host = "n3bchu9gg1.execute-api.eu-west-1.amazonaws.com/test"
+# host = "localhost:9000/2015-03-31/functions/function/invocations"
+lambda_endpoint = f"https://{host}/predict"
 
 
 # Function to make predictions using AWS Lambda
