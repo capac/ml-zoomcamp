@@ -57,7 +57,7 @@ uploaded_file = st.file_uploader(
 if uploaded_file is not None:
     # Open and display the uploaded image
     image = Image.open(uploaded_file)
-    st.image(image, caption="Uploaded Image", use_column_width=True)
+    st.image(image, caption="Uploaded Image", width=400)
 
     # Make predictions using AWS Lambda
     predicted_breed = predict_dog_breed(image)
@@ -68,24 +68,14 @@ if uploaded_file is not None:
         predicted_breed_df.rename(
             columns={0: "Probability", "index": "Dog breed"}, inplace=True
         )
-        # Define custom colors
-        colors = (
-            "#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C",
-            "#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00",
-            "#CAB2D6", "#6A3D9A",
-        )
-        color_scale = alt.Scale(
-            domain=list(predicted_breed_df["Dog breed"]), range=colors
-        )
         y_axis = alt.Axis(offset=5)
         # Create the bar chart
         chart = (
             alt.Chart(predicted_breed_df)
-            .mark_bar()
+            .mark_bar(color='#31B1E0')
             .encode(
                 x=alt.X("Probability"),
                 y=alt.Y("Dog breed:N", sort="-x").axis(y_axis),
-                color=alt.Color("Dog breed", scale=color_scale, legend=None),
             )
             .properties(title="Dog breed probability",
                         width="container")
