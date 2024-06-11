@@ -1,49 +1,8 @@
 import streamlit as st
-import requests
 from PIL import Image
-from io import BytesIO
-import base64
-import json
 import pandas as pd
 import altair as alt
-
-# Define your Lambda endpoint URL
-host = "n3bchu9gg1.execute-api.eu-west-1.amazonaws.com/test"
-# host = "localhost:9000/2015-03-31/functions/function/invocations"
-lambda_endpoint = f"https://{host}/predict"
-
-
-# Function to make predictions using AWS Lambda
-def predict_dog_breed(image):
-    try:
-        # Convert the image to bytes
-        img_byte_arr = BytesIO()
-        image.save(img_byte_arr, format="PNG")
-        img_byte_arr = img_byte_arr.getvalue()
-
-        # Encode image to base64
-        img_base64 = base64.b64encode(img_byte_arr).decode("utf-8")
-
-        # Make a POST request to your Lambda function
-        headers = {"Content-Type": "application/json"}
-        payload = {"image": img_base64}
-
-        response = requests.post(lambda_endpoint, json=payload,
-                                 headers=headers)
-        # Check if the request was successful
-        response.raise_for_status()
-
-        # Parse the response
-        predict_breed_list = response.json().get("image")
-        predict_breed = json.loads(predict_breed_list)["predicted_breed"]
-        predict_breed_dict = dict(predict_breed)
-        return predict_breed_dict
-
-    except requests.exceptions.RequestException as e:
-        st.error(f"Request failed: {e}")
-    except ValueError as e:
-        st.error(f"Invalid response: {e}")
-
+from prediction_function import predict
 
 # Set up the Streamlit app
 st.title("Dog Breed Classifier")
@@ -60,9 +19,8 @@ if uploaded_file is not None:
     st.image(image, caption="Uploaded Image", width=400)
 
     # Make predictions using AWS Lambda
-    predicted_breed = predict_dog_breed(image)
+    predicted_breed = predict(image)
     if predicted_breed is not None:
-        # st.write('Predicted Dog Breed:', predicted_breed)
 
         predicted_breed_df = pd.Series(predicted_breed).reset_index()
         predicted_breed_df.rename(
