@@ -5,7 +5,6 @@ import numpy as np
 from PIL import Image
 from io import BytesIO
 import base64
-# import tensorflow.lite as tflite
 import tflite_runtime.interpreter as tflite  # type: ignore
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
