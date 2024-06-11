@@ -1,5 +1,7 @@
 import streamlit as st
 from PIL import Image
+from io import BytesIO
+import base64
 import pandas as pd
 import altair as alt
 from prediction_function import predict
@@ -18,13 +20,21 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption="Uploaded Image", width=400)
 
-    # Make predictions using AWS Lambda
-    predicted_breed = predict(image)
+    # Convert the image to bytes
+    img_byte_arr = BytesIO()
+    image.save(img_byte_arr, format="PNG")
+    img_byte_arr = img_byte_arr.getvalue()
+
+    # Encode image to base64
+    img_base64 = base64.b64encode(img_byte_arr).decode("utf-8")
+
+    # Make predictions using 'predict' function from 'prediction_function'
+    predicted_breed = predict(img_base64)
     if predicted_breed is not None:
 
-        predicted_breed_df = pd.Series(predicted_breed).reset_index()
+        predicted_breed_df = pd.DataFrame(predicted_breed)
         predicted_breed_df.rename(
-            columns={0: "Probability", "index": "Dog breed"}, inplace=True
+            columns={0: "Dog breed", 1: "Probability"}, inplace=True
         )
         y_axis = alt.Axis(offset=5)
         # Create the bar chart
