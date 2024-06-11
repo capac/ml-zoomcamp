@@ -1,12 +1,8 @@
 #!/usr/bin/env python
 
 import os
-import requests
 import numpy as np
-import base64
-from io import BytesIO
 from PIL import Image
-import json
 import tflite_runtime.interpreter as tflite  # type: ignore
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -55,14 +51,6 @@ input_index = interpreter.get_input_details()[0]['index']
 output_index = interpreter.get_output_details()[0]['index']
 
 
-def _preprocess_image(image_data):
-    # Decode the base64-encoded image
-    image_data = base64.b64decode(image_data)
-    # Prepare the image for sending
-    image = Image.open(BytesIO(image_data))
-    return image
-
-
 def _prepare_image(img, target_size):
     if img.mode != 'RGB':
         img = img.convert('RGB')
@@ -70,9 +58,8 @@ def _prepare_image(img, target_size):
     return img
 
 
-def predict(image_data):
-    img = _preprocess_image(image_data)
-    img = _prepare_image(img, target_size=(150, 150))
+def predict(image):
+    img = _prepare_image(image, target_size=(150, 150))
     x = np.array(img, dtype='float32')
     X = np.array([x])
 
@@ -87,34 +74,3 @@ def predict(image_data):
     predict_breed_probs = [(key, np.round(1/(1 + np.exp(-float(val))), 4))
                            for val, key in dict(sorted_list).items()]
     return predict_breed_probs
-
-
-def lambda_handler(event, context):
-    try:
-        # Check if image is present
-        if 'image' not in event:
-            return {
-                'statusCode': 400,
-                'image': json.dumps('No image data found in the request')
-            }
-
-        # Get the image data from the request
-        image_data = event['image']
-        prediction = predict(image_data)
-
-        return {
-            'statusCode': 200,
-            'image': json.dumps({'predicted_breed': prediction}),
-            'headers': {'Content-Type': 'application/json'}
-        }
-
-    except requests.exceptions.RequestException as e:
-        return {
-            'statusCode': 400,
-            'image': json.dumps(f"Request failed: {str(e)}")
-        }
-    except Exception as e:
-        return {
-            'statusCode': 400,
-            'image': json.dumps(f"Error processing the image: {str(e)}")
-        }
