@@ -3,7 +3,8 @@
 import os
 import numpy as np
 from PIL import Image
-import tflite_runtime.interpreter as tflite  # type: ignore
+import tensorflow.lite as tflite
+# import tflite_runtime.interpreter as tflite  # type: ignore
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 MODEL_NAME = os.getenv('MODEL_NAME', 'top_120_dog_breeds.tflite')
