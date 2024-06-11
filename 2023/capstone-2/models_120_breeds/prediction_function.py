@@ -3,8 +3,10 @@
 import os
 import numpy as np
 from PIL import Image
-import tensorflow.lite as tflite
-# import tflite_runtime.interpreter as tflite  # type: ignore
+from io import BytesIO
+import base64
+# import tensorflow.lite as tflite
+import tflite_runtime.interpreter as tflite  # type: ignore
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 MODEL_NAME = os.getenv('MODEL_NAME', 'top_120_dog_breeds.tflite')
@@ -52,6 +54,14 @@ input_index = interpreter.get_input_details()[0]['index']
 output_index = interpreter.get_output_details()[0]['index']
 
 
+def _preprocess_image(image_data):
+    # Decode the base64-encoded image
+    image_data = base64.b64decode(image_data)
+    # Prepare the image for sending
+    image = Image.open(BytesIO(image_data))
+    return image
+
+
 def _prepare_image(img, target_size):
     if img.mode != 'RGB':
         img = img.convert('RGB')
@@ -59,8 +69,9 @@ def _prepare_image(img, target_size):
     return img
 
 
-def predict(image):
-    img = _prepare_image(image, target_size=(150, 150))
+def predict(image_data):
+    img = _preprocess_image(image_data)
+    img = _prepare_image(img, target_size=(150, 150))
     x = np.array(img, dtype='float32')
     X = np.array([x])
 
